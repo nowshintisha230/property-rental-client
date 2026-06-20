@@ -19,6 +19,19 @@ import toast from "react-hot-toast";
 
 const AuthContext = createContext(null);
 
+// ─── Normalize user object ─────────────────────────────────────────────────
+// Backend may return photo as "photo" or "photoURL" — we normalize to always
+// have BOTH so components can use either without breaking.
+const normalizeUser = (userData) => {
+  if (!userData) return null;
+  const photo = userData.photo || userData.photoURL || "";
+  return {
+    ...userData,
+    photo,
+    photoURL: photo,
+  };
+};
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -32,17 +45,16 @@ export function AuthProvider({ children }) {
         const savedUser = localStorage.getItem("user");
 
         if (savedToken && savedUser) {
+          const parsed = normalizeUser(JSON.parse(savedUser));
           setToken(savedToken);
-          setUser(JSON.parse(savedUser));
+          setUser(parsed);
 
-          // Verify token is still valid
+          // Verify token is still valid with backend
           try {
             const res = await axiosInstance.get("/auth/me");
-            setUser(res.data.data.user);
-            localStorage.setItem(
-              "user",
-              JSON.stringify(res.data.data.user)
-            );
+            const normalized = normalizeUser(res.data.data.user);
+            setUser(normalized);
+            localStorage.setItem("user", JSON.stringify(normalized));
           } catch {
             // Token invalid — clear storage
             localStorage.removeItem("token");
@@ -60,10 +72,11 @@ export function AuthProvider({ children }) {
   }, []);
 
   const saveSession = useCallback((userData, userToken) => {
-    setUser(userData);
+    const normalized = normalizeUser(userData);
+    setUser(normalized);
     setToken(userToken);
     if (userToken) localStorage.setItem("token", userToken);
-    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("user", JSON.stringify(normalized));
   }, []);
 
   const clearSession = useCallback(() => {
@@ -75,16 +88,16 @@ export function AuthProvider({ children }) {
 
   // Email/password register
   const register = useCallback(
-    async ({ name, email, password, photo }) => {
+    async ({ name, email, password, photo, photoURL }) => {
       const res = await axiosInstance.post("/auth/register", {
         name,
         email,
         password,
-        photo,
+        photo: photo || photoURL || "",
       });
       const { user: userData, token: userToken } = res.data.data;
       saveSession(userData, userToken);
-      return userData;
+      return normalizeUser(userData);
     },
     [saveSession]
   );
@@ -98,7 +111,7 @@ export function AuthProvider({ children }) {
       });
       const { user: userData, token: userToken } = res.data.data;
       saveSession(userData, userToken);
-      return userData;
+      return normalizeUser(userData);
     },
     [saveSession]
   );
@@ -106,12 +119,20 @@ export function AuthProvider({ children }) {
   // Google OAuth login
   const googleLogin = useCallback(async () => {
     const result = await signInWithPopup(auth, googleProvider);
-    const idToken = await result.user.getIdToken();
+    const firebaseUser = result.user;
+    const idToken = await firebaseUser.getIdToken();
 
     const res = await axiosInstance.post("/auth/google", { idToken });
     const { user: userData, token: userToken } = res.data.data;
+
+    // If backend didn't save the photo, fall back to Firebase's photoURL
+    if (!userData.photo && !userData.photoURL && firebaseUser.photoURL) {
+      userData.photo = firebaseUser.photoURL;
+      userData.photoURL = firebaseUser.photoURL;
+    }
+
     saveSession(userData, userToken);
-    return userData;
+    return normalizeUser(userData);
   }, [saveSession]);
 
   // Logout
@@ -121,21 +142,20 @@ export function AuthProvider({ children }) {
     } catch {
       // Continue logout even if API call fails
     }
-
     try {
       await firebaseSignOut(auth);
     } catch {
       // Continue logout even if Firebase sign out fails
     }
-
     clearSession();
     toast.success("Logged out successfully");
   }, [clearSession]);
 
   // Update user in context (after profile update)
   const updateUser = useCallback((updatedUser) => {
-    setUser(updatedUser);
-    localStorage.setItem("user", JSON.stringify(updatedUser));
+    const normalized = normalizeUser(updatedUser);
+    setUser(normalized);
+    localStorage.setItem("user", JSON.stringify(normalized));
   }, []);
 
   const value = {

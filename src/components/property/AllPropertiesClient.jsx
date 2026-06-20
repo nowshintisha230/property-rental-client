@@ -179,13 +179,19 @@ export default function AllPropertiesClient() {
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         {/* Search */}
         <div className="relative flex-1">
-          <TbSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
+          <span className="absolute left-0 top-0 h-full flex items-center pl-4 z-10 pointer-events-none">
+            <TbSearch className="w-5 h-5 text-gray-400" />
+          </span>
           <input
             type="text"
             placeholder="Search by title, location, or description..."
             value={searchInput}
             onChange={handleSearchInput}
-            className="input-base pl-11 pr-4"
+            className="input-base w-full"
+            style={{
+              paddingLeft: "3rem",
+              paddingRight: searchInput ? "2.5rem" : "1rem",
+            }}
           />
           {searchInput && (
             <button
@@ -193,7 +199,7 @@ export default function AllPropertiesClient() {
                 setSearchInput("");
                 handleFilterChange("search", "");
               }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 z-10"
             >
               <TbX className="w-4 h-4" />
             </button>

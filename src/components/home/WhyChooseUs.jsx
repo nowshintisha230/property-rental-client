@@ -17,48 +17,48 @@ const features = [
     title: "Verified Properties",
     description:
       "Every property is reviewed and approved by our admin team to ensure authenticity and quality.",
-    gradient: "from-blue-500 to-cyan-500",
     bg: "bg-blue-50 dark:bg-blue-900/20",
+    color: "text-blue-500",
   },
   {
     icon: TbSearch,
     title: "Smart Search",
     description:
       "Advanced filters by location, type, price, and amenities help you find exactly what you need.",
-    gradient: "from-purple-500 to-pink-500",
     bg: "bg-purple-50 dark:bg-purple-900/20",
+    color: "text-purple-500",
   },
   {
     icon: TbCreditCard,
     title: "Secure Payments",
     description:
       "Powered by Stripe. Your payment data is encrypted and never stored on our servers.",
-    gradient: "from-green-500 to-emerald-500",
     bg: "bg-green-50 dark:bg-green-900/20",
+    color: "text-green-500",
   },
   {
     icon: TbHeadset,
     title: "24/7 Support",
     description:
       "Our dedicated support team is available around the clock to help you with any issues.",
-    gradient: "from-orange-500 to-yellow-500",
     bg: "bg-orange-50 dark:bg-orange-900/20",
+    color: "text-orange-500",
   },
   {
     icon: TbStar,
     title: "Honest Reviews",
     description:
       "Real reviews from verified tenants help you make informed decisions before booking.",
-    gradient: "from-yellow-500 to-amber-500",
     bg: "bg-yellow-50 dark:bg-yellow-900/20",
+    color: "text-amber-500",
   },
   {
     icon: TbMapPin,
     title: "Prime Locations",
     description:
       "Properties in the most sought-after neighborhoods across major cities nationwide.",
-    gradient: "from-red-500 to-pink-500",
     bg: "bg-red-50 dark:bg-red-900/20",
+    color: "text-red-500",
   },
 ];
 
@@ -103,12 +103,7 @@ export default function WhyChooseUs() {
               <div
                 className={`inline-flex p-3.5 rounded-2xl ${feature.bg} mb-5 group-hover:scale-110 transition-transform duration-300`}
               >
-                <feature.icon
-                  className={`w-6 h-6 bg-gradient-to-br ${feature.gradient} bg-clip-text text-transparent`}
-                  style={{
-                    backgroundImage: `linear-gradient(to bottom right, var(--tw-gradient-stops))`,
-                  }}
-                />
+                <feature.icon className={`w-6 h-6 ${feature.color}`} />
               </div>
 
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 font-heading">

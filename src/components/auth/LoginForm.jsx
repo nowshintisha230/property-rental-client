@@ -150,8 +150,9 @@ export default function LoginForm() {
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
             Email Address
           </label>
-          <div className="relative">
-            <TbMail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
+          {/* ✅ FIX: wrapper is relative, icon is pointer-events-none so it doesn't block clicks */}
+          <div className="relative flex items-center">
+            <TbMail className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
             <input
               type="email"
               placeholder="you@example.com"
@@ -163,11 +164,11 @@ export default function LoginForm() {
                   message: "Please enter a valid email",
                 },
               })}
-              className={`input-base pl-11 ${
-                errors.email
-                  ? "border-red-400 focus:ring-red-400"
-                  : ""
-              }`}
+              className={`
+                input-base w-full
+                pl-11 pr-4 py-3
+                ${errors.email ? "border-red-400 focus:ring-red-400" : ""}
+              `}
             />
           </div>
           {errors.email && (
@@ -190,8 +191,9 @@ export default function LoginForm() {
               Forgot password?
             </Link>
           </div>
-          <div className="relative">
-            <TbLock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
+          {/* ✅ FIX: wrapper is relative, icon is pointer-events-none, right toggle has correct z-index */}
+          <div className="relative flex items-center">
+            <TbLock className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
             <input
               type={showPassword ? "text" : "password"}
               placeholder="••••••••"
@@ -199,16 +201,17 @@ export default function LoginForm() {
               {...register("password", {
                 required: "Password is required",
               })}
-              className={`input-base pl-11 pr-11 ${
-                errors.password
-                  ? "border-red-400 focus:ring-red-400"
-                  : ""
-              }`}
+              className={`
+                input-base w-full
+                pl-11 pr-12 py-3
+                ${errors.password ? "border-red-400 focus:ring-red-400" : ""}
+              `}
             />
             <button
               type="button"
               onClick={() => setShowPassword((p) => !p)}
               className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors z-10"
+              aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? (
                 <TbEyeOff className="w-5 h-5" />
