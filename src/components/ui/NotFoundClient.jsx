@@ -1,13 +1,10 @@
-// src/app/not-found.jsx
+// src/components/ui/NotFoundClient.jsx
+"use client";
 import Link from "next/link";
 import { Button } from "@heroui/react";
 import { TbError404, TbHome, TbArrowLeft } from "react-icons/tb";
 
-export const metadata = {
-  title: "404 — Page Not Found",
-};
-
-export default function NotFound() {
+export default function NotFoundClient() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-950 px-4">
       <div className="text-center max-w-lg">

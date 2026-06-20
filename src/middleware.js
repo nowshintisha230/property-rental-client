@@ -6,7 +6,8 @@ const protectedRoutes = {
   "/tenant": ["tenant"],
   "/owner": ["owner"],
   "/admin": ["admin"],
-  "/payment": ["tenant"],
+  "/payment/checkout": ["tenant"],
+  "/payment/success": ["tenant"],
 };
 
 export function middleware(request) {
