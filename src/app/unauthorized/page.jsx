@@ -1,11 +1,8 @@
-// src/app/unauthorized/page.jsx
+"use client";
+
 import Link from "next/link";
 import { Button } from "@heroui/react";
 import { TbLock, TbHome, TbLogin } from "react-icons/tb";
-
-export const metadata = {
-  title: "Unauthorized Access",
-};
 
 export default function UnauthorizedPage() {
   return (
