@@ -1,6 +1,6 @@
 // src/app/page.jsx
-import Navbar from "@/components/ui/Navbar";
-import Footer from "@/components/ui/Footer";
+
+
 import Banner from "@/components/home/Banner";
 import FeaturedProperties from "@/components/home/FeaturedProperties";
 import WhyChooseUs from "@/components/home/WhyChooseUs";
@@ -19,7 +19,7 @@ export const metadata = {
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
-      <Navbar />
+    
       <main>
         <Banner />
         <FeaturedProperties />
@@ -30,7 +30,7 @@ export default function HomePage() {
         <CustomerReviews />
         <TrustedOwners />
       </main>
-      <Footer />
+  
     </div>
   );
 }

@@ -180,17 +180,20 @@
   }
 }
 
-/* input-base as plain CSS (cannot use @apply for custom classes outside @layer) */
+/* ─── input-base ───────────────────────────────────────────────────────────
+   Padding is intentionally NOT set here so Tailwind utility classes
+   (pl-11, pr-11, py-3, etc.) can control spacing without being overridden.
+   Only structural / visual styles live here.
+────────────────────────────────────────────────────────────────────────── */
 .input-base {
   width: 100%;
-  padding: 0.75rem 1rem;
   border-radius: 0.75rem;
   border: 1px solid #e5e7eb;
   background-color: #ffffff;
   color: #111827;
-  font-size: 1rem;
+  font-size: 0.975rem;
   outline: none;
-  transition: all 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .dark .input-base {
   border-color: #374151;
@@ -211,7 +214,7 @@
 .dashboard-scroll::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
 .dark .dashboard-scroll::-webkit-scrollbar-thumb { background: #374151; }
 
-/* Stripe element as plain CSS */
+/* Stripe element */
 .stripe-element {
   width: 100%;
   padding: 12px 16px;

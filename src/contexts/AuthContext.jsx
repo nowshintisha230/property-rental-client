@@ -11,7 +11,6 @@ import {
 import {
   signInWithPopup,
   signOut as firebaseSignOut,
-  onAuthStateChanged,
 } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase";
 import axiosInstance from "@/lib/axios";
@@ -19,18 +18,26 @@ import toast from "react-hot-toast";
 
 const AuthContext = createContext(null);
 
-// ─── Normalize user object ─────────────────────────────────────────────────
-// Backend may return photo as "photo" or "photoURL" — we normalize to always
-// have BOTH so components can use either without breaking.
 const normalizeUser = (userData) => {
   if (!userData) return null;
   const photo = userData.photo || userData.photoURL || "";
-  return {
-    ...userData,
-    photo,
-    photoURL: photo,
-  };
+  return { ...userData, photo, photoURL: photo };
 };
+
+// ─── Cookie helpers ────────────────────────────────────────────────────────
+// Middleware runs on the server and can only read cookies — not localStorage.
+// So we must keep token + user in cookies in sync with localStorage.
+const COOKIE_MAX_AGE = 7 * 24 * 60 * 60; // 7 days in seconds
+
+function setCookies(token, user) {
+  document.cookie = `token=${token}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax`;
+  document.cookie = `user=${encodeURIComponent(JSON.stringify(user))}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax`;
+}
+
+function clearCookies() {
+  document.cookie = "token=; path=/; max-age=0";
+  document.cookie = "user=; path=/; max-age=0";
+}
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -49,16 +56,21 @@ export function AuthProvider({ children }) {
           setToken(savedToken);
           setUser(parsed);
 
+          // Keep cookies in sync in case they were cleared (e.g. browser restart)
+          setCookies(savedToken, parsed);
+
           // Verify token is still valid with backend
           try {
             const res = await axiosInstance.get("/auth/me");
             const normalized = normalizeUser(res.data.data.user);
             setUser(normalized);
             localStorage.setItem("user", JSON.stringify(normalized));
+            setCookies(savedToken, normalized);
           } catch {
-            // Token invalid — clear storage
+            // Token invalid — clear everything
             localStorage.removeItem("token");
             localStorage.removeItem("user");
+            clearCookies();
             setUser(null);
             setToken(null);
           }
@@ -75,7 +87,10 @@ export function AuthProvider({ children }) {
     const normalized = normalizeUser(userData);
     setUser(normalized);
     setToken(userToken);
-    if (userToken) localStorage.setItem("token", userToken);
+    if (userToken) {
+      localStorage.setItem("token", userToken);
+      setCookies(userToken, normalized); // ✅ cookie তেও save
+    }
     localStorage.setItem("user", JSON.stringify(normalized));
   }, []);
 
@@ -84,6 +99,7 @@ export function AuthProvider({ children }) {
     setToken(null);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    clearCookies(); // ✅ cookie ও clear
   }, []);
 
   // Email/password register
@@ -105,10 +121,7 @@ export function AuthProvider({ children }) {
   // Email/password login
   const login = useCallback(
     async ({ email, password }) => {
-      const res = await axiosInstance.post("/auth/login", {
-        email,
-        password,
-      });
+      const res = await axiosInstance.post("/auth/login", { email, password });
       const { user: userData, token: userToken } = res.data.data;
       saveSession(userData, userToken);
       return normalizeUser(userData);
@@ -125,7 +138,6 @@ export function AuthProvider({ children }) {
     const res = await axiosInstance.post("/auth/google", { idToken });
     const { user: userData, token: userToken } = res.data.data;
 
-    // If backend didn't save the photo, fall back to Firebase's photoURL
     if (!userData.photo && !userData.photoURL && firebaseUser.photoURL) {
       userData.photo = firebaseUser.photoURL;
       userData.photoURL = firebaseUser.photoURL;
@@ -156,6 +168,9 @@ export function AuthProvider({ children }) {
     const normalized = normalizeUser(updatedUser);
     setUser(normalized);
     localStorage.setItem("user", JSON.stringify(normalized));
+    // ✅ cookie ও update করো
+    const savedToken = localStorage.getItem("token");
+    if (savedToken) setCookies(savedToken, normalized);
   }, []);
 
   const value = {

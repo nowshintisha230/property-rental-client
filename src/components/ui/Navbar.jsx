@@ -49,7 +49,7 @@ const roleDashboardPath = {
 };
 
 export default function Navbar() {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, loading } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -86,10 +86,7 @@ export default function Navbar() {
         <div className="section-container">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link
-              href="/"
-              className="flex items-center gap-2.5 group"
-            >
+            <Link href="/" className="flex items-center gap-2.5 group">
               <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
                 <TbBuildingEstate className="w-5 h-5 text-white" />
               </div>
@@ -121,19 +118,22 @@ export default function Navbar() {
             <div className="hidden md:flex items-center gap-2">
               <ThemeToggle />
 
-              {isAuthenticated ? (
+              {/* Auth loading skeleton */}
+              {loading ? (
+                <div className="w-20 h-8 rounded-xl bg-gray-200 dark:bg-gray-700 animate-pulse" />
+              ) : isAuthenticated ? (
                 <div className="flex items-center gap-2">
                   {/* Dashboard link */}
-                  <Button
-                    as={Link}
-                    href={dashboardPath}
-                    variant="light"
-                    size="sm"
-                    startContent={<TbLayoutDashboard className="w-4 h-4" />}
-                    className="font-medium text-gray-700 dark:text-gray-300"
-                  >
-                    Dashboard
-                  </Button>
+                  <Link href={dashboardPath}>
+                    <Button
+                      variant="light"
+                      size="sm"
+                      startContent={<TbLayoutDashboard className="w-4 h-4" />}
+                      className="font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      Dashboard
+                    </Button>
+                  </Link>
 
                   {/* User dropdown */}
                   <Dropdown placement="bottom-end">
@@ -166,23 +166,23 @@ export default function Navbar() {
                     <DropdownMenu
                       aria-label="User menu"
                       className="min-w-[200px]"
+                      onAction={(key) => {
+                        if (key === "profile")
+                          router.push(`${dashboardPath}/profile`);
+                        if (key === "dashboard") router.push(dashboardPath);
+                        if (key === "logout") handleLogout();
+                      }}
                     >
                       <DropdownItem
                         key="profile"
                         startContent={<TbUser className="w-4 h-4" />}
-                        href={`${dashboardPath}/profile`}
-                        as={Link}
                         description={user?.email}
                       >
                         My Profile
                       </DropdownItem>
                       <DropdownItem
                         key="dashboard"
-                        startContent={
-                          <TbLayoutDashboard className="w-4 h-4" />
-                        }
-                        href={dashboardPath}
-                        as={Link}
+                        startContent={<TbLayoutDashboard className="w-4 h-4" />}
                       >
                         Dashboard
                       </DropdownItem>
@@ -191,7 +191,6 @@ export default function Navbar() {
                         startContent={<TbLogout className="w-4 h-4" />}
                         color="danger"
                         className="text-danger"
-                        onPress={handleLogout}
                       >
                         Logout
                       </DropdownItem>
@@ -199,26 +198,27 @@ export default function Navbar() {
                   </Dropdown>
                 </div>
               ) : (
+                // ✅ Login / Register — Link দিয়ে wrap করা হয়েছে
                 <div className="flex items-center gap-2">
-                  <Button
-                    as={Link}
-                    href="/login"
-                    variant="light"
-                    size="sm"
-                    startContent={<TbLogin className="w-4 h-4" />}
-                    className="font-medium text-gray-700 dark:text-gray-300"
-                  >
-                    Login
-                  </Button>
-                  <Button
-                    as={Link}
-                    href="/register"
-                    size="sm"
-                    startContent={<TbUserPlus className="w-4 h-4" />}
-                    className="font-semibold btn-gradient text-white"
-                  >
-                    Register
-                  </Button>
+                  <Link href="/login">
+                    <Button
+                      variant="light"
+                      size="sm"
+                      startContent={<TbLogin className="w-4 h-4" />}
+                      className="font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      Login
+                    </Button>
+                  </Link>
+                  <Link href="/register">
+                    <Button
+                      size="sm"
+                      startContent={<TbUserPlus className="w-4 h-4" />}
+                      className="font-semibold btn-gradient text-white"
+                    >
+                      Register
+                    </Button>
+                  </Link>
                 </div>
               )}
             </div>
@@ -271,7 +271,12 @@ export default function Navbar() {
               ))}
 
               <div className="border-t border-gray-100 dark:border-gray-800 pt-3 mt-3">
-                {isAuthenticated ? (
+                {loading ? (
+                  <div className="px-4 py-3 space-y-2">
+                    <div className="w-full h-10 rounded-xl bg-gray-200 dark:bg-gray-700 animate-pulse" />
+                    <div className="w-full h-10 rounded-xl bg-gray-200 dark:bg-gray-700 animate-pulse" />
+                  </div>
+                ) : isAuthenticated ? (
                   <>
                     {/* User info */}
                     <div className="flex items-center gap-3 px-4 py-3 mb-2">
@@ -307,26 +312,27 @@ export default function Navbar() {
                     </button>
                   </>
                 ) : (
+                  // ✅ Mobile Login / Register — Link দিয়ে wrap করা হয়েছে
                   <div className="flex flex-col gap-2 px-4">
-                    <Button
-                      as={Link}
-                      href="/login"
-                      variant="bordered"
-                      fullWidth
-                      startContent={<TbLogin className="w-4 h-4" />}
-                      className="font-semibold"
-                    >
-                      Login
-                    </Button>
-                    <Button
-                      as={Link}
-                      href="/register"
-                      fullWidth
-                      startContent={<TbUserPlus className="w-4 h-4" />}
-                      className="font-semibold btn-gradient text-white"
-                    >
-                      Register
-                    </Button>
+                    <Link href="/login" className="w-full">
+                      <Button
+                        variant="bordered"
+                        fullWidth
+                        startContent={<TbLogin className="w-4 h-4" />}
+                        className="font-semibold"
+                      >
+                        Login
+                      </Button>
+                    </Link>
+                    <Link href="/register" className="w-full">
+                      <Button
+                        fullWidth
+                        startContent={<TbUserPlus className="w-4 h-4" />}
+                        className="font-semibold btn-gradient text-white"
+                      >
+                        Register
+                      </Button>
+                    </Link>
                   </div>
                 )}
               </div>
