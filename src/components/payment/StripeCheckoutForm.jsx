@@ -17,6 +17,7 @@ import {
   TbCheck,
   TbAlertCircle,
   TbShieldCheck,
+  TbCurrencyDollar,
 } from "react-icons/tb";
 import axiosInstance from "@/lib/axios";
 import { formatCurrency } from "@/lib/utils";
@@ -119,8 +120,7 @@ export default function StripeCheckoutForm({
     layout: {
       type: "tabs",
       defaultCollapsed: false,
-      radios: true,
-      spacedAccordionItems: false,
+     
     },
   };
 

@@ -262,10 +262,10 @@ export default function LoginForm() {
             <strong>Admin:</strong> admin@renteasy.com / Admin123
           </p>
           <p>
-            <strong>Owner:</strong> owner@renteasy.com / Owner123
+            <strong>Owner:</strong>Fill the register form and then login
           </p>
           <p>
-            <strong>Tenant:</strong> tenant@renteasy.com / Tenant123
+            <strong>Tenant:</strong>Only Google login Allowed
           </p>
         </div>
       </div>

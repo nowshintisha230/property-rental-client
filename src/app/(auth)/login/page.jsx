@@ -1,4 +1,5 @@
 // src/app/(auth)/login/page.jsx
+import { Suspense } from "react";
 import LoginForm from "@/components/auth/LoginForm";
 
 export const metadata = {
@@ -7,5 +8,9 @@ export const metadata = {
 };
 
 export default function LoginPage() {
-  return <LoginForm />;
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+      <LoginForm />
+    </Suspense>
+  );
 }

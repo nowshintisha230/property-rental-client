@@ -1,4 +1,3 @@
-// src/components/property/AllPropertiesClient.jsx
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -43,7 +42,6 @@ export default function AllPropertiesClient() {
   });
   const [showFilters, setShowFilters] = useState(false);
 
-  // Filters state
   const [filters, setFilters] = useState({
     search: searchParams.get("search") || "",
     location: searchParams.get("location") || "",
@@ -56,7 +54,6 @@ export default function AllPropertiesClient() {
 
   const [searchInput, setSearchInput] = useState(filters.search);
 
-  // Sync URL params to state on mount
   useEffect(() => {
     setFilters({
       search: searchParams.get("search") || "",
@@ -94,7 +91,6 @@ export default function AllPropertiesClient() {
     fetchProperties();
   }, [fetchProperties]);
 
-  // Update URL when filters change
   const updateURL = (newFilters) => {
     const params = new URLSearchParams();
     Object.entries(newFilters).forEach(([k, v]) => {
@@ -118,7 +114,6 @@ export default function AllPropertiesClient() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Debounced search
   const debouncedSearch = useCallback(
     debounce((value) => {
       handleFilterChange("search", value);
@@ -183,16 +178,18 @@ export default function AllPropertiesClient() {
             <TbSearch className="w-5 h-5 text-gray-400" />
           </span>
           <input
-            type="text"
-            placeholder="Search by title, location, or description..."
-            value={searchInput}
-            onChange={handleSearchInput}
-            className="input-base w-full"
-            style={{
-              paddingLeft: "3rem",
-              paddingRight: searchInput ? "2.5rem" : "1rem",
-            }}
-          />
+  type="text"
+  placeholder="Search by title, location, or description..."
+  value={searchInput}
+  onChange={handleSearchInput}
+  className="input-base w-full"
+  style={{
+    paddingLeft: "3rem",
+    paddingRight: searchInput ? "2.5rem" : "1rem",
+    paddingTop: "0.75rem",
+    paddingBottom: "0.75rem",
+  }}
+/>
           {searchInput && (
             <button
               onClick={() => {

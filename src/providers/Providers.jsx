@@ -17,7 +17,9 @@ export default function Providers({ children }) {
     <ThemeProvider>
       <AuthProvider>
         <HeroUIWithTheme>
+                
           {children}
+          
           <ScrollToTop />
           <Toaster
             position="top-right"
