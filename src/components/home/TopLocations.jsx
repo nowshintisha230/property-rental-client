@@ -21,7 +21,7 @@ const fallbackLocations = [
     count: 98,
     avgPrice: 2800,
     sampleImage:
-      "https://images.unsplash.com/photo-1580655653885-65763b2597d1?w=400&q=80",
+      "https://images.unsplash.com/photo-1592201533886-b8a3e1f348a8?w=400&q=80",
   },
   {
     location: "Chicago",

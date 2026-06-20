@@ -1,4 +1,3 @@
-// src/components/dashboard/admin/AdminPropertiesClient.jsx
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -179,7 +178,7 @@ export default function AdminPropertiesClient() {
       {/* Search + filter */}
       <div className="flex flex-col sm:flex-row gap-3 mb-5">
         <div className="relative flex-1 max-w-md">
-          <TbSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
+          <TbSearch className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10 pointer-events-none" />
           <input
             type="text"
             placeholder="Search by title or location..."
@@ -188,7 +187,8 @@ export default function AdminPropertiesClient() {
               setSearchInput(e.target.value);
               debouncedSearch(e.target.value);
             }}
-            className="input-base pl-11"
+            className="input-base w-full"
+            style={{ paddingLeft: "2.75rem" }}
           />
         </div>
       </div>

@@ -42,6 +42,17 @@ const ALL_AMENITIES = [
   "Elevator","Furnished","TV Cable",
 ];
 
+// Reusable icon wrapper — guarantees no overlap regardless of global input styles
+function InputIcon({ icon: Icon }) {
+  return (
+    <span className="absolute left-0 top-0 h-full flex items-center pl-3.5 pointer-events-none z-10">
+      <Icon className="w-5 h-5 text-gray-400" />
+    </span>
+  );
+}
+
+const iconInputStyle = { paddingLeft: "2.75rem" };
+
 function StepIndicator({ step, currentStep, label }) {
   const done = currentStep > step;
   const active = currentStep === step;
@@ -283,7 +294,7 @@ export default function AddPropertyClient() {
                 Property Title *
               </label>
               <div className="relative">
-                <TbHome className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
+                <InputIcon icon={TbHome} />
                 <input
                   type="text"
                   placeholder="e.g. Modern Downtown Apartment with City View"
@@ -298,7 +309,8 @@ export default function AddPropertyClient() {
                       message: "Title cannot exceed 120 characters",
                     },
                   })}
-                  className={`input-base pl-11 ${
+                  style={iconInputStyle}
+                  className={`input-base w-full ${
                     errors.title ? "border-red-400" : ""
                   }`}
                 />
@@ -353,14 +365,15 @@ export default function AddPropertyClient() {
                 Location *
               </label>
               <div className="relative">
-                <TbMapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
+                <InputIcon icon={TbMapPin} />
                 <input
                   type="text"
                   placeholder="e.g. Manhattan, New York, NY"
                   {...register("location", {
                     required: "Location is required",
                   })}
-                  className={`input-base pl-11 ${
+                  style={iconInputStyle}
+                  className={`input-base w-full ${
                     errors.location ? "border-red-400" : ""
                   }`}
                 />
@@ -448,7 +461,7 @@ export default function AddPropertyClient() {
                   Rent Price *
                 </label>
                 <div className="relative">
-                  <TbCurrencyDollar className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
+                  <InputIcon icon={TbCurrencyDollar} />
                   <input
                     type="number"
                     min="0"
@@ -460,7 +473,8 @@ export default function AddPropertyClient() {
                         message: "Price must be positive",
                       },
                     })}
-                    className={`input-base pl-11 ${
+                    style={iconInputStyle}
+                    className={`input-base w-full ${
                       errors.price ? "border-red-400" : ""
                     }`}
                   />
@@ -480,7 +494,7 @@ export default function AddPropertyClient() {
                   {...register("rentType", {
                     required: "Rent type is required",
                   })}
-                  className="input-base cursor-pointer"
+                  className="input-base cursor-pointer w-full"
                 >
                   {RENT_TYPES.map((t) => (
                     <option key={t} value={t}>
@@ -498,7 +512,7 @@ export default function AddPropertyClient() {
                   Bedrooms *
                 </label>
                 <div className="relative">
-                  <TbBed className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
+                  <InputIcon icon={TbBed} />
                   <input
                     type="number"
                     min="0"
@@ -509,7 +523,8 @@ export default function AddPropertyClient() {
                       min: { value: 0, message: "Min 0" },
                       max: { value: 50, message: "Max 50" },
                     })}
-                    className={`input-base pl-11 ${
+                    style={iconInputStyle}
+                    className={`input-base w-full ${
                       errors.bedrooms ? "border-red-400" : ""
                     }`}
                   />
@@ -526,7 +541,7 @@ export default function AddPropertyClient() {
                   Bathrooms *
                 </label>
                 <div className="relative">
-                  <TbBath className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
+                  <InputIcon icon={TbBath} />
                   <input
                     type="number"
                     min="0"
@@ -537,7 +552,8 @@ export default function AddPropertyClient() {
                       min: { value: 0, message: "Min 0" },
                       max: { value: 50, message: "Max 50" },
                     })}
-                    className={`input-base pl-11 ${
+                    style={iconInputStyle}
+                    className={`input-base w-full ${
                       errors.bathrooms ? "border-red-400" : ""
                     }`}
                   />
@@ -554,7 +570,7 @@ export default function AddPropertyClient() {
                   Size (sqft) *
                 </label>
                 <div className="relative">
-                  <TbRuler className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
+                  <InputIcon icon={TbRuler} />
                   <input
                     type="number"
                     min="1"
@@ -563,7 +579,8 @@ export default function AddPropertyClient() {
                       required: "Required",
                       min: { value: 1, message: "Min 1 sqft" },
                     })}
-                    className={`input-base pl-11 ${
+                    style={iconInputStyle}
+                    className={`input-base w-full ${
                       errors.size ? "border-red-400" : ""
                     }`}
                   />
@@ -753,14 +770,15 @@ export default function AddPropertyClient() {
                 Your Name *
               </label>
               <div className="relative">
-                <TbUser className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
+                <InputIcon icon={TbUser} />
                 <input
                   type="text"
                   placeholder="Your full name"
                   {...register("ownerName", {
                     required: "Owner name is required",
                   })}
-                  className={`input-base pl-11 ${
+                  style={iconInputStyle}
+                  className={`input-base w-full ${
                     errors.ownerName ? "border-red-400" : ""
                   }`}
                 />
@@ -778,7 +796,7 @@ export default function AddPropertyClient() {
                 Contact Email *
               </label>
               <div className="relative">
-                <TbMail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
+                <InputIcon icon={TbMail} />
                 <input
                   type="email"
                   placeholder="your@email.com"
@@ -790,7 +808,8 @@ export default function AddPropertyClient() {
                       message: "Please enter a valid email",
                     },
                   })}
-                  className={`input-base pl-11 ${
+                  style={iconInputStyle}
+                  className={`input-base w-full ${
                     errors.ownerEmail ? "border-red-400" : ""
                   }`}
                 />
@@ -809,12 +828,13 @@ export default function AddPropertyClient() {
                 <span className="text-gray-400 font-normal">(optional)</span>
               </label>
               <div className="relative">
-                <TbPhone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
+                <InputIcon icon={TbPhone} />
                 <input
                   type="tel"
                   placeholder="+1 (555) 000-0000"
                   {...register("ownerPhone")}
-                  className="input-base pl-11"
+                  style={iconInputStyle}
+                  className="input-base w-full"
                 />
               </div>
             </div>

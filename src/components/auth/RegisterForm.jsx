@@ -1,12 +1,12 @@
 // src/components/auth/RegisterForm.jsx
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Button, Divider } from "@heroui/react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   TbUserCircle,
   TbMail,
@@ -16,9 +16,15 @@ import {
   TbCheck,
   TbX,
   TbArrowRight,
+  TbPhoto,
+  TbUpload,
+  TbTrash,
+  TbLink,
 } from "react-icons/tb";
 import { useAuth } from "@/contexts/AuthContext";
 import toast from "react-hot-toast";
+
+const IMGBB_API_KEY = process.env.NEXT_PUBLIC_IMGBB_API_KEY; // add to your .env.local
 
 const PasswordRequirement = ({ met, label }) => (
   <div className="flex items-center gap-1.5">
@@ -48,6 +54,16 @@ export default function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
+  // Photo state
+  const [photoMode, setPhotoMode] = useState("upload"); // "upload" | "url"
+  const [photoFile, setPhotoFile] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(null);
+  const [photoUrl, setPhotoUrl] = useState("");
+  const [photoUrlPreview, setPhotoUrlPreview] = useState("");
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [uploadedPhotoUrl, setUploadedPhotoUrl] = useState(""); // final URL after imgbb upload
+  const fileInputRef = useRef(null);
+
   const {
     register,
     handleSubmit,
@@ -70,17 +86,79 @@ export default function RegisterForm() {
     lowercase: /[a-z]/.test(password),
   };
 
+  // ── Photo handlers ──────────────────────────────────────────────────────────
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be smaller than 5 MB.");
+      return;
+    }
+
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
+    setUploadedPhotoUrl(""); // reset previous upload
+  };
+
+  const handleRemoveFile = () => {
+    setPhotoFile(null);
+    setPhotoPreview(null);
+    setUploadedPhotoUrl("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const uploadToImgbb = async (file) => {
+    const formData = new FormData();
+    formData.append("image", file);
+    const res = await fetch(
+      `https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`,
+      { method: "POST", body: formData }
+    );
+    const data = await res.json();
+    if (!data.success) throw new Error("imgbb upload failed");
+    return data.data.url;
+  };
+
+  const handlePhotoUrlChange = (e) => {
+    const val = e.target.value.trim();
+    setPhotoUrl(val);
+    setPhotoUrlPreview(val);
+  };
+
+  // ── Submit ──────────────────────────────────────────────────────────────────
+
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
+      let finalPhotoUrl = "";
+
+      if (photoMode === "upload" && photoFile) {
+        setIsUploadingPhoto(true);
+        finalPhotoUrl = await uploadToImgbb(photoFile);
+        setUploadedPhotoUrl(finalPhotoUrl);
+        setIsUploadingPhoto(false);
+      } else if (photoMode === "url" && photoUrl) {
+        finalPhotoUrl = photoUrl;
+      }
+
       const user = await registerUser({
         name: data.name.trim(),
         email: data.email.trim(),
         password: data.password,
+        photoURL: finalPhotoUrl || undefined,
+        role: "owner", // ⬅️ এই ফর্ম দিয়ে register করলে সবাই Owner হবে
       });
+
       toast.success(`Welcome to RentEasy, ${user.name}!`);
-      router.push("/tenant");
+      router.push("/owner"); // ⬅️ owner dashboard-এ redirect
     } catch (err) {
+      setIsUploadingPhoto(false);
       toast.error(
         err.response?.data?.message || "Registration failed. Please try again."
       );
@@ -94,20 +172,18 @@ export default function RegisterForm() {
     try {
       const user = await googleLogin();
       toast.success(`Welcome to RentEasy, ${user.name}!`);
-      router.push("/tenant");
+      router.push("/tenant"); // Google দিয়ে আসলে role tenant, তাই tenant dashboard-এ
     } catch (err) {
       toast.error(
-        err.response?.data?.message || "Google sign-up failed. Please try again."
+        err.response?.data?.message ||
+          "Google sign-up failed. Please try again."
       );
     } finally {
       setIsGoogleLoading(false);
     }
   };
 
-  // ─── Shared input style ───────────────────────────────────────────────────
-  // Key fix: use pl-10 (40px) on mobile and pl-11 (44px) on sm+ so the icon
-  // at left-3 / left-3.5 (12–14 px) + its width (16–20 px) never bleeds into
-  // the placeholder text.  Password fields also get pr-10/pr-11 for the eye button.
+  // ── Shared input style ──────────────────────────────────────────────────────
   const inputBase =
     "w-full rounded-xl border border-gray-200 dark:border-gray-700 " +
     "bg-white dark:bg-gray-900 text-gray-900 dark:text-white " +
@@ -117,6 +193,9 @@ export default function RegisterForm() {
     "transition-colors";
 
   const inputError = "border-red-400 focus:ring-red-400";
+
+  // current photo preview (either file or url)
+  const activePreview = photoMode === "upload" ? photoPreview : photoUrlPreview;
 
   return (
     <div className="w-full min-h-screen flex items-center justify-center bg-white dark:bg-gray-950 px-4 py-8 sm:px-6 lg:px-8">
@@ -129,10 +208,10 @@ export default function RegisterForm() {
         {/* Header */}
         <div className="mb-6 sm:mb-8">
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white font-heading mb-1.5 sm:mb-2">
-            Create account
+            Create Owner Account
           </h2>
           <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">
-            Join thousands finding their perfect home
+            List your properties and start earning today
           </p>
         </div>
 
@@ -187,13 +266,12 @@ export default function RegisterForm() {
           noValidate
           className="space-y-4 sm:space-y-5"
         >
-          {/* ── Full Name ─────────────────────────────────────────────────── */}
+          {/* ── Full Name ──────────────────────────────────────────────────── */}
           <div>
             <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-1.5">
               Full Name
             </label>
             <div className="relative">
-              {/* Icon: left-3 = 12px, w-5 = 20px → total ~32px; pl-10 = 40px gives 8px gap ✓ */}
               <TbUserCircle className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
               <input
                 type="text"
@@ -212,7 +290,7 @@ export default function RegisterForm() {
             )}
           </div>
 
-          {/* ── Email ─────────────────────────────────────────────────────── */}
+          {/* ── Email ──────────────────────────────────────────────────────── */}
           <div>
             <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-1.5">
               Email Address
@@ -238,7 +316,156 @@ export default function RegisterForm() {
             )}
           </div>
 
-          {/* ── Password ──────────────────────────────────────────────────── */}
+          {/* ── Profile Photo ───────────────────────────────────────────────── */}
+          <div>
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-1.5">
+              Profile Photo{" "}
+              <span className="font-normal text-gray-400">(optional)</span>
+            </label>
+
+            {/* Mode toggle */}
+            <div className="flex rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 mb-3">
+              <button
+                type="button"
+                onClick={() => setPhotoMode("upload")}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs sm:text-sm font-medium transition-colors ${
+                  photoMode === "upload"
+                    ? "bg-blue-500 text-white"
+                    : "bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
+                }`}
+              >
+                <TbUpload className="w-4 h-4" />
+                Upload File
+              </button>
+              <button
+                type="button"
+                onClick={() => setPhotoMode("url")}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs sm:text-sm font-medium transition-colors ${
+                  photoMode === "url"
+                    ? "bg-blue-500 text-white"
+                    : "bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
+                }`}
+              >
+                <TbLink className="w-4 h-4" />
+                Image URL
+              </button>
+            </div>
+
+            <AnimatePresence mode="wait">
+              {/* ── Upload mode ── */}
+              {photoMode === "upload" && (
+                <motion.div
+                  key="upload"
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.18 }}
+                >
+                  {!photoPreview ? (
+                    // Drop zone
+                    <label
+                      htmlFor="photo-upload"
+                      className="flex flex-col items-center justify-center gap-2 w-full h-28 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 cursor-pointer hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors group"
+                    >
+                      <TbPhoto className="w-7 h-7 text-gray-300 dark:text-gray-600 group-hover:text-blue-400 transition-colors" />
+                      <div className="text-center">
+                        <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 group-hover:text-blue-500 transition-colors">
+                          Click to upload photo
+                        </p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                          PNG, JPG, WEBP up to 5 MB
+                        </p>
+                      </div>
+                      <input
+                        id="photo-upload"
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleFileChange}
+                      />
+                    </label>
+                  ) : (
+                    // Preview
+                    <div className="flex items-center gap-3 p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+                      <img
+                        src={photoPreview}
+                        alt="Profile preview"
+                        className="w-14 h-14 rounded-full object-cover flex-shrink-0 border-2 border-white dark:border-gray-700 shadow"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
+                          {photoFile?.name}
+                        </p>
+                        <p className="text-xs text-gray-400 mt-0.5">
+                          {photoFile ? (photoFile.size / 1024).toFixed(0) + " KB" : ""}
+                        </p>
+                        {uploadedPhotoUrl && (
+                          <p className="text-xs text-green-500 mt-0.5 flex items-center gap-1">
+                            <TbCheck className="w-3 h-3" /> Uploaded to imgbb
+                          </p>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleRemoveFile}
+                        className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex-shrink-0"
+                        aria-label="Remove photo"
+                      >
+                        <TbTrash className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+
+              {/* ── URL mode ── */}
+              {photoMode === "url" && (
+                <motion.div
+                  key="url"
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.18 }}
+                  className="space-y-2"
+                >
+                  <div className="relative">
+                    <TbLink className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
+                    <input
+                      type="url"
+                      placeholder="https://example.com/photo.jpg"
+                      value={photoUrl}
+                      onChange={handlePhotoUrlChange}
+                      className={`${inputBase} pl-10`}
+                    />
+                  </div>
+                  {/* URL preview */}
+                  <AnimatePresence>
+                    {photoUrlPreview && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="flex items-center gap-3 p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50"
+                      >
+                        <img
+                          src={photoUrlPreview}
+                          alt="Profile preview"
+                          onError={() => setPhotoUrlPreview("")}
+                          className="w-14 h-14 rounded-full object-cover flex-shrink-0 border-2 border-white dark:border-gray-700 shadow"
+                        />
+                        <p className="text-xs text-gray-500 dark:text-gray-400 break-all line-clamp-2">
+                          {photoUrlPreview}
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* ── Password ───────────────────────────────────────────────────── */}
           <div>
             <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-1.5">
               Password
@@ -259,7 +486,6 @@ export default function RegisterForm() {
                       /[a-z]/.test(v) || "Must contain at least one lowercase letter",
                   },
                 })}
-                // pl-10 for left icon, pr-10 for right eye-toggle button
                 className={`${inputBase} pl-10 pr-10 ${errors.password ? inputError : ""}`}
               />
               <button
@@ -276,7 +502,6 @@ export default function RegisterForm() {
               </button>
             </div>
 
-            {/* Password requirements checklist */}
             {password.length > 0 && (
               <div className="mt-2 p-2.5 sm:p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-1.5">
                 <PasswordRequirement met={passwordChecks.length}    label="At least 6 characters" />
@@ -290,7 +515,7 @@ export default function RegisterForm() {
             )}
           </div>
 
-          {/* ── Confirm Password ──────────────────────────────────────────── */}
+          {/* ── Confirm Password ───────────────────────────────────────────── */}
           <div>
             <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-1.5">
               Confirm Password
@@ -342,11 +567,15 @@ export default function RegisterForm() {
           <Button
             type="submit"
             fullWidth
-            isLoading={isLoading}
-            endContent={!isLoading && <TbArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />}
+            isLoading={isLoading || isUploadingPhoto}
+            endContent={
+              !isLoading && !isUploadingPhoto && (
+                <TbArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
+              )
+            }
             className="h-11 sm:h-12 text-sm sm:text-base font-semibold btn-gradient text-white"
           >
-            Create Account
+            {isUploadingPhoto ? "Uploading photo…" : "Create Owner Account"}
           </Button>
         </form>
 
