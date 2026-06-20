@@ -1,18 +1,15 @@
-// src/providers/Providers.jsx
+// src/providers/Providers.jsx — complete updated version
 "use client";
 
 import { HeroUIProvider } from "@heroui/react";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
+import ScrollToTop from "@/components/ui/ScrollToTop";
 
 function HeroUIWithTheme({ children }) {
   const { theme } = useTheme();
-  return (
-    <HeroUIProvider>
-      {children}
-    </HeroUIProvider>
-  );
+  return <HeroUIProvider>{children}</HeroUIProvider>;
 }
 
 export default function Providers({ children }) {
@@ -21,10 +18,12 @@ export default function Providers({ children }) {
       <AuthProvider>
         <HeroUIWithTheme>
           {children}
+          <ScrollToTop />
           <Toaster
             position="top-right"
             reverseOrder={false}
             gutter={8}
+            containerStyle={{ zIndex: 9999 }}
             toastOptions={{
               className: "toast-custom",
               duration: 4000,
@@ -40,16 +39,10 @@ export default function Providers({ children }) {
                   "0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05)",
               },
               success: {
-                iconTheme: {
-                  primary: "#10b981",
-                  secondary: "#fff",
-                },
+                iconTheme: { primary: "#10b981", secondary: "#fff" },
               },
               error: {
-                iconTheme: {
-                  primary: "#ef4444",
-                  secondary: "#fff",
-                },
+                iconTheme: { primary: "#ef4444", secondary: "#fff" },
               },
             }}
           />

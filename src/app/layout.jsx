@@ -1,7 +1,8 @@
-// src/app/layout.jsx
+// src/app/layout.jsx — complete updated version
 import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import Providers from "@/providers/Providers";
+import DarkModeScript from "@/components/ui/DarkModeScript";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,6 +30,7 @@ export const metadata = {
     "apartments for rent",
     "house rental",
     "booking platform",
+    "renteasy",
   ],
   authors: [{ name: "RentEasy Team" }],
   openGraph: {
@@ -38,10 +40,7 @@ export const metadata = {
     type: "website",
     locale: "en_US",
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
+  robots: { index: true, follow: true },
 };
 
 export const viewport = {
@@ -56,6 +55,9 @@ export default function RootLayout({ children }) {
       className={`${inter.variable} ${poppins.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        <DarkModeScript />
+      </head>
       <body className="antialiased">
         <Providers>{children}</Providers>
       </body>

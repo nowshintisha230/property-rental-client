@@ -5,7 +5,7 @@ import {
   TbBuildingSkyscraper,
   TbCalendarOff,
   TbHeartOff,
-  TbUsersOff,
+  TbUserOff,
   TbReceiptOff,
   TbSearch,
 } from "react-icons/tb";
@@ -14,7 +14,7 @@ const icons = {
   properties: TbBuildingSkyscraper,
   bookings: TbCalendarOff,
   favorites: TbHeartOff,
-  users: TbUsersOff,
+  users: TbUserOff,
   transactions: TbReceiptOff,
   search: TbSearch,
 };
@@ -62,9 +62,7 @@ export default function EmptyState({
 
   const displayTitle = title || defaults[type]?.title || "Nothing Here";
   const displayDescription =
-    description ||
-    defaults[type]?.description ||
-    "No items to display.";
+    description || defaults[type]?.description || "No items to display.";
 
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
