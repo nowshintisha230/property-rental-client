@@ -103,7 +103,7 @@ export default function ShareProperty({ propertyId, propertyTitle }) {
             {/* Social share buttons */}
             <div className="flex flex-wrap gap-2 mb-5">
               {shareOptions.map((option) => (
-                
+                <a
                   key={option.label}
                   href={option.url}
                   target="_blank"
