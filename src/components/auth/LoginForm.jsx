@@ -262,10 +262,7 @@ export default function LoginForm() {
             <strong>Admin:</strong> admin@renteasy.com / Admin123
           </p>
           <p>
-            <strong>Owner:</strong>Fill the register form and then login
-          </p>
-          <p>
-            <strong>Tenant:</strong>Only Google login Allowed
+           For Google login default role is TENANT
           </p>
         </div>
       </div>
