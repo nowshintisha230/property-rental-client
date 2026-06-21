@@ -3,9 +3,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@heroui/react";
-import { TbArrowRight, TbSparkles } from "react-icons/tb";
+import { TbArrowRight, TbSparkles, TbChevronLeft, TbChevronRight } from "react-icons/tb";
 import PropertyCard from "@/components/property/PropertyCard";
 import { PropertyCardSkeleton } from "@/components/ui/SkeletonCard";
 import axiosInstance from "@/lib/axios";
@@ -31,7 +31,10 @@ const cardVariants = {
 export default function FeaturedProperties() {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [itemsPerPage, setItemsPerPage] = useState(2); // default desktop
+  const [currentPage, setCurrentPage] = useState(1);
 
+  // Backend থেকে একবারে সব (৬টা) property fetch
   useEffect(() => {
     axiosInstance
       .get("/properties/featured")
@@ -39,6 +42,34 @@ export default function FeaturedProperties() {
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  // Screen size অনুযায়ী itemsPerPage সেট করা — mobile: 1, desktop (sm এবং তার উপরে): 2
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 640px)");
+
+    const updateItemsPerPage = (matches) => {
+      setItemsPerPage(matches ? 2 : 1);
+      setCurrentPage(1); // resize হলে পেজ ১-এ রিসেট
+    };
+
+    updateItemsPerPage(mq.matches);
+
+    const handleChange = (e) => updateItemsPerPage(e.matches);
+    mq.addEventListener("change", handleChange);
+    return () => mq.removeEventListener("change", handleChange);
+  }, []);
+
+  const totalPages = Math.ceil(properties.length / itemsPerPage) || 1;
+
+  const paginatedProperties = properties.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handlePageChange = (newPage) => {
+    if (newPage < 1 || newPage > totalPages) return;
+    setCurrentPage(newPage);
+  };
 
   return (
     <section className="section-padding bg-gray-50 dark:bg-gray-900/50">
@@ -82,25 +113,30 @@ export default function FeaturedProperties() {
         </motion.div>
 
         {/* Grid */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.1 }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
-          {loading
-            ? Array.from({ length: 6 }).map((_, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3, delay: i * 0.05 }}
-                >
-                  <PropertyCardSkeleton />
-                </motion.div>
-              ))
-            : properties.map((property) => (
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {Array.from({ length: itemsPerPage }).map((_, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3, delay: i * 0.05 }}
+              >
+                <PropertyCardSkeleton />
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentPage}
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              exit={{ opacity: 0 }}
+              className="grid grid-cols-1 sm:grid-cols-2 gap-6"
+            >
+              {paginatedProperties.map((property) => (
                 <motion.div
                   key={property._id}
                   variants={cardVariants}
@@ -110,7 +146,54 @@ export default function FeaturedProperties() {
                   <PropertyCard property={property} />
                 </motion.div>
               ))}
-        </motion.div>
+            </motion.div>
+          </AnimatePresence>
+        )}
+
+        {/* Pagination controls */}
+        {!loading && totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-10">
+            <Button
+              isIconOnly
+              variant="bordered"
+              size="sm"
+              isDisabled={currentPage === 1}
+              onPress={() => handlePageChange(currentPage - 1)}
+            >
+              <TbChevronLeft className="w-4 h-4" />
+            </Button>
+
+            {Array.from({ length: totalPages }).map((_, i) => {
+              const pageNum = i + 1;
+              return (
+                <Button
+                  key={pageNum}
+                  size="sm"
+                  isIconOnly
+                  variant={pageNum === currentPage ? "solid" : "bordered"}
+                  className={
+                    pageNum === currentPage
+                      ? "btn-gradient text-white"
+                      : ""
+                  }
+                  onPress={() => handlePageChange(pageNum)}
+                >
+                  {pageNum}
+                </Button>
+              );
+            })}
+
+            <Button
+              isIconOnly
+              variant="bordered"
+              size="sm"
+              isDisabled={currentPage === totalPages}
+              onPress={() => handlePageChange(currentPage + 1)}
+            >
+              <TbChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
+        )}
 
         {/* CTA */}
         <motion.div
