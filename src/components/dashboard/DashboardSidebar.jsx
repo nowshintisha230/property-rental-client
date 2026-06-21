@@ -4,8 +4,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { Avatar, Button, Chip } from "@heroui/react";
+import { Avatar, Chip } from "@heroui/react";
 import {
   TbHome,
   TbBuildingSkyscraper,
@@ -16,13 +15,11 @@ import {
   TbList,
   TbClipboardList,
   TbUsers,
-  TbShieldCheck,
   TbReceipt,
   TbLogout,
   TbChevronLeft,
   TbChevronRight,
   TbLayoutDashboard,
-  TbBuildingEstate,
 } from "react-icons/tb";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
@@ -73,6 +70,13 @@ const sidebarConfig = {
   },
 };
 
+// Accent colors per role, used for the active-link state and avatar ring
+const accentMap = {
+  primary: { text: "text-blue-400", bg: "bg-blue-500/10", bar: "bg-blue-400" },
+  warning: { text: "text-amber-400", bg: "bg-amber-500/10", bar: "bg-amber-400" },
+  danger: { text: "text-red-400", bg: "bg-red-500/10", bar: "bg-red-400" },
+};
+
 export default function DashboardSidebar({ role }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -80,6 +84,7 @@ export default function DashboardSidebar({ role }) {
   const [collapsed, setCollapsed] = useState(false);
 
   const config = sidebarConfig[role] || sidebarConfig.tenant;
+  const accent = accentMap[config.color] || accentMap.primary;
 
   const handleLogout = async () => {
     await logout();
@@ -89,28 +94,28 @@ export default function DashboardSidebar({ role }) {
   return (
     <aside
       className={cn(
-        "hidden md:flex flex-col h-[calc(100vh-64px)] sticky top-16 bg-white dark:bg-gray-900 border-r border-gray-100 dark:border-gray-800 transition-all duration-300 dashboard-scroll overflow-y-auto",
+        "hidden md:flex flex-col h-[calc(100vh-64px)] sticky top-16 bg-gray-900 border-r border-gray-800 transition-all duration-300 overflow-y-auto relative",
         collapsed ? "w-20" : "w-64"
       )}
     >
       {/* Collapse toggle */}
       <button
         onClick={() => setCollapsed((c) => !c)}
-        className="absolute -right-3 top-6 w-6 h-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-shadow z-10"
+        className="absolute -right-3 top-6 w-6 h-6 bg-gray-800 border border-gray-700 rounded-full flex items-center justify-center shadow-md hover:bg-gray-700 transition-colors z-10"
       >
         {collapsed ? (
-          <TbChevronRight className="w-3.5 h-3.5 text-gray-600 dark:text-gray-300" />
+          <TbChevronRight className="w-3.5 h-3.5 text-gray-300" />
         ) : (
-          <TbChevronLeft className="w-3.5 h-3.5 text-gray-600 dark:text-gray-300" />
+          <TbChevronLeft className="w-3.5 h-3.5 text-gray-300" />
         )}
       </button>
 
-      <div className="flex flex-col h-full p-3">
+      <div className="flex flex-col h-full p-4">
         {/* User profile summary */}
         <div
           className={cn(
-            "flex items-center gap-3 p-3 mb-4 rounded-2xl bg-gray-50 dark:bg-gray-800/50",
-            collapsed && "justify-center p-2"
+            "flex items-center gap-3 p-3 mb-6 rounded-2xl bg-gray-800/60 border border-gray-800",
+            collapsed && "justify-center p-2.5"
           )}
         >
           <Avatar
@@ -123,14 +128,14 @@ export default function DashboardSidebar({ role }) {
           />
           {!collapsed && (
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+              <p className="text-sm font-semibold text-white truncate leading-tight">
                 {user?.name}
               </p>
               <Chip
                 size="sm"
                 variant="flat"
                 color={config.color}
-                className="h-4 text-[10px] capitalize mt-0.5"
+                className="h-4 text-[10px] capitalize mt-1"
               >
                 {config.label}
               </Chip>
@@ -139,9 +144,9 @@ export default function DashboardSidebar({ role }) {
         </div>
 
         {/* Navigation links */}
-        <nav className="flex-1 space-y-1">
+        <nav className="space-y-1">
           {!collapsed && (
-            <p className="text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 mb-2">
+            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-3 mb-2">
               Navigation
             </p>
           )}
@@ -155,49 +160,53 @@ export default function DashboardSidebar({ role }) {
               <Link
                 key={link.href}
                 href={link.href}
+                title={collapsed ? link.label : undefined}
                 className={cn(
-                  "sidebar-link",
-                  isActive && "active",
+                  "relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors duration-150",
+                  isActive
+                    ? cn(accent.bg, accent.text)
+                    : "text-gray-400 hover:text-gray-100 hover:bg-gray-800/70",
                   collapsed && "justify-center px-2"
                 )}
-                title={collapsed ? link.label : undefined}
               >
-                <link.icon
-                  className={cn(
-                    "w-5 h-5 flex-shrink-0",
-                    isActive
-                      ? "text-blue-600 dark:text-blue-400"
-                      : "text-gray-500 dark:text-gray-400"
-                  )}
-                />
-                {!collapsed && (
-                  <span className="truncate">{link.label}</span>
+                {isActive && (
+                  <span
+                    className={cn(
+                      "absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-full",
+                      accent.bar
+                    )}
+                  />
                 )}
+                <link.icon className="w-5 h-5 flex-shrink-0" />
+                {!collapsed && <span className="truncate">{link.label}</span>}
               </Link>
             );
           })}
         </nav>
 
+        {/* Spacer pushes bottom actions down only as far as needed */}
+        <div className="flex-1" />
+
         {/* Bottom actions */}
-        <div className="border-t border-gray-100 dark:border-gray-800 pt-3 space-y-1">
+        <div className="border-t border-gray-800 pt-3 space-y-1">
           <Link
             href="/"
+            title={collapsed ? "Home" : undefined}
             className={cn(
-              "sidebar-link",
+              "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-gray-800/70 transition-colors duration-150",
               collapsed && "justify-center px-2"
             )}
-            title={collapsed ? "Home" : undefined}
           >
-            <TbHome className="w-5 h-5 flex-shrink-0 text-gray-500 dark:text-gray-400" />
+            <TbHome className="w-5 h-5 flex-shrink-0" />
             {!collapsed && <span>Back to Home</span>}
           </Link>
           <button
             onClick={handleLogout}
+            title={collapsed ? "Logout" : undefined}
             className={cn(
-              "sidebar-link w-full text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600",
+              "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors duration-150 w-full",
               collapsed && "justify-center px-2"
             )}
-            title={collapsed ? "Logout" : undefined}
           >
             <TbLogout className="w-5 h-5 flex-shrink-0" />
             {!collapsed && <span>Logout</span>}
