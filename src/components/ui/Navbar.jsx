@@ -27,7 +27,6 @@ import {
   TbX,
   TbChevronDown,
 } from "react-icons/tb";
-import ThemeToggle from "./ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 
@@ -79,7 +78,7 @@ export default function Navbar() {
         className={cn(
           "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
           isScrolled
-            ? "bg-white/90 dark:bg-gray-950/90 backdrop-blur-md shadow-sm border-b border-gray-100 dark:border-gray-800"
+            ? "bg-gray-950/90 backdrop-blur-md shadow-sm border-b border-gray-800"
             : "bg-transparent"
         )}
       >
@@ -90,7 +89,7 @@ export default function Navbar() {
               <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
                 <TbBuildingEstate className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold text-gray-900 dark:text-white font-heading">
+              <span className="text-xl font-bold text-white font-heading">
                 RentEasy
               </span>
             </Link>
@@ -104,8 +103,8 @@ export default function Navbar() {
                   className={cn(
                     "flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200",
                     pathname === link.href
-                      ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
-                      : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+                      ? "text-blue-400 bg-blue-900/20"
+                      : "text-gray-300 hover:text-white hover:bg-gray-800"
                   )}
                 >
                   <link.icon className="w-4 h-4" />
@@ -116,11 +115,9 @@ export default function Navbar() {
 
             {/* Desktop Right Actions */}
             <div className="hidden md:flex items-center gap-2">
-              <ThemeToggle />
-
               {/* Auth loading skeleton */}
               {loading ? (
-                <div className="w-20 h-8 rounded-xl bg-gray-200 dark:bg-gray-700 animate-pulse" />
+                <div className="w-20 h-8 rounded-xl bg-gray-700 animate-pulse" />
               ) : isAuthenticated ? (
                 <div className="flex items-center gap-2">
                   {/* Dashboard link */}
@@ -129,7 +126,7 @@ export default function Navbar() {
                       variant="light"
                       size="sm"
                       startContent={<TbLayoutDashboard className="w-4 h-4" />}
-                      className="font-medium text-gray-700 dark:text-gray-300"
+                      className="font-medium text-gray-300"
                     >
                       Dashboard
                     </Button>
@@ -138,7 +135,7 @@ export default function Navbar() {
                   {/* User dropdown */}
                   <Dropdown placement="bottom-end">
                     <DropdownTrigger>
-                      <button className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                      <button className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-gray-800 transition-colors">
                         <Avatar
                           src={user?.photo}
                           name={user?.name}
@@ -148,7 +145,7 @@ export default function Navbar() {
                           color={roleColors[user?.role] || "primary"}
                         />
                         <div className="text-left hidden lg:block">
-                          <p className="text-sm font-medium text-gray-900 dark:text-white leading-tight max-w-[120px] truncate">
+                          <p className="text-sm font-medium text-white leading-tight max-w-[120px] truncate">
                             {user?.name}
                           </p>
                           <Chip
@@ -198,14 +195,13 @@ export default function Navbar() {
                   </Dropdown>
                 </div>
               ) : (
-                // ✅ Login / Register — Link দিয়ে wrap করা হয়েছে
                 <div className="flex items-center gap-2">
                   <Link href="/login">
                     <Button
                       variant="light"
                       size="sm"
                       startContent={<TbLogin className="w-4 h-4" />}
-                      className="font-medium text-gray-700 dark:text-gray-300"
+                      className="font-medium text-gray-300"
                     >
                       Login
                     </Button>
@@ -223,12 +219,11 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* Mobile: Theme + Menu toggle */}
+            {/* Mobile: Menu toggle */}
             <div className="flex md:hidden items-center gap-1">
-              <ThemeToggle size="sm" />
               <button
                 onClick={() => setIsMenuOpen((o) => !o)}
-                className="p-2 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="p-2 rounded-xl text-gray-300 hover:bg-gray-800 transition-colors"
                 aria-label="Toggle menu"
               >
                 {isMenuOpen ? (
@@ -250,7 +245,7 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
-            className="fixed top-16 left-0 right-0 z-40 bg-white dark:bg-gray-950 border-b border-gray-100 dark:border-gray-800 shadow-lg md:hidden"
+            className="fixed top-16 left-0 right-0 z-40 bg-gray-950 border-b border-gray-800 shadow-lg md:hidden"
           >
             <div className="section-container py-4 space-y-1">
               {/* Nav links */}
@@ -261,8 +256,8 @@ export default function Navbar() {
                   className={cn(
                     "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors",
                     pathname === link.href
-                      ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
-                      : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                      ? "text-blue-400 bg-blue-900/20"
+                      : "text-gray-300 hover:bg-gray-800"
                   )}
                 >
                   <link.icon className="w-5 h-5" />
@@ -270,11 +265,11 @@ export default function Navbar() {
                 </Link>
               ))}
 
-              <div className="border-t border-gray-100 dark:border-gray-800 pt-3 mt-3">
+              <div className="border-t border-gray-800 pt-3 mt-3">
                 {loading ? (
                   <div className="px-4 py-3 space-y-2">
-                    <div className="w-full h-10 rounded-xl bg-gray-200 dark:bg-gray-700 animate-pulse" />
-                    <div className="w-full h-10 rounded-xl bg-gray-200 dark:bg-gray-700 animate-pulse" />
+                    <div className="w-full h-10 rounded-xl bg-gray-700 animate-pulse" />
+                    <div className="w-full h-10 rounded-xl bg-gray-700 animate-pulse" />
                   </div>
                 ) : isAuthenticated ? (
                   <>
@@ -288,31 +283,30 @@ export default function Navbar() {
                         color={roleColors[user?.role] || "primary"}
                       />
                       <div>
-                        <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                        <p className="text-sm font-semibold text-white">
                           {user?.name}
                         </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">
+                        <p className="text-xs text-gray-400 capitalize">
                           {user?.role}
                         </p>
                       </div>
                     </div>
                     <Link
                       href={dashboardPath}
-                      className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                      className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-300 hover:bg-gray-800"
                     >
                       <TbLayoutDashboard className="w-5 h-5" />
                       Dashboard
                     </Link>
                     <button
                       onClick={handleLogout}
-                      className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 w-full"
+                      className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-900/20 w-full"
                     >
                       <TbLogout className="w-5 h-5" />
                       Logout
                     </button>
                   </>
                 ) : (
-                  // ✅ Mobile Login / Register — Link দিয়ে wrap করা হয়েছে
                   <div className="flex flex-col gap-2 px-4">
                     <Link href="/login" className="w-full">
                       <Button
