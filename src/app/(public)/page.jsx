@@ -24,10 +24,10 @@ export default function HomePage() {
         <Banner />
         <FeaturedProperties />
         <WhyChooseUs />
+        <CustomerReviews />
         <TopLocations />
         <RecentlyAdded />
         <RentalStatistics />
-        <CustomerReviews />
         <TrustedOwners />
       </main>
   
