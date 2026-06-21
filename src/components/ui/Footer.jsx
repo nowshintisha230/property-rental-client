@@ -2,7 +2,7 @@
 import Link from "next/link";
 import {
   TbBuildingEstate,
-  TbBrandTwitter,
+  TbBrandX,
   TbBrandFacebook,
   TbBrandInstagram,
   TbBrandLinkedin,
@@ -33,10 +33,10 @@ const footerLinks = {
 };
 
 const socialLinks = [
-  { icon: TbBrandTwitter, href: "#", label: "Twitter" },
-  { icon: TbBrandFacebook, href: "#", label: "Facebook" },
-  { icon: TbBrandInstagram, href: "#", label: "Instagram" },
-  { icon: TbBrandLinkedin, href: "#", label: "LinkedIn" },
+  { icon: TbBrandX, href: "https://x.com/renteasy", label: "X" },
+  { icon: TbBrandFacebook, href: "https://facebook.com/renteasy", label: "Facebook" },
+  { icon: TbBrandInstagram, href: "https://instagram.com/renteasy", label: "Instagram" },
+  { icon: TbBrandLinkedin, href: "https://linkedin.com/company/renteasy", label: "LinkedIn" },
 ];
 
 export default function Footer() {
@@ -78,7 +78,7 @@ export default function Footer() {
             {/* Social links */}
             <div className="flex items-center gap-2.5 mt-6">
               {socialLinks.map((social) => (
-                <a
+                
                   key={social.label}
                   href={social.href}
                   target="_blank"
