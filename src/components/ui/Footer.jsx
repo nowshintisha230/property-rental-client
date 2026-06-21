@@ -32,19 +32,11 @@ const footerLinks = {
   ],
 };
 
-const socialLinks = [
-  { icon: TbBrandX, href: "https://x.com/renteasy", label: "X" },
-  { icon: TbBrandFacebook, href: "https://facebook.com/renteasy", label: "Facebook" },
-  { icon: TbBrandInstagram, href: "https://instagram.com/renteasy", label: "Instagram" },
-  { icon: TbBrandLinkedin, href: "https://linkedin.com/company/renteasy", label: "LinkedIn" },
-];
-
 export default function Footer() {
   return (
     <footer className="bg-gray-950 text-gray-300">
       <div className="section-container py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
-          {/* Brand column */}
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center gap-2.5 mb-5">
               <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl">
@@ -59,7 +51,6 @@ export default function Footer() {
               Connecting tenants with trusted property owners since 2024.
             </p>
 
-            {/* Contact info */}
             <div className="space-y-2.5">
               <div className="flex items-center gap-2.5 text-sm text-gray-400">
                 <TbMail className="w-4 h-4 text-blue-400 flex-shrink-0" />
@@ -75,24 +66,46 @@ export default function Footer() {
               </div>
             </div>
 
-            {/* Social links */}
             <div className="flex items-center gap-2.5 mt-6">
-              {socialLinks.map((social) => (
-                
-                  key={social.label}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={social.label}
-                  className="p-2 rounded-xl bg-gray-800 hover:bg-blue-600 text-gray-400 hover:text-white transition-all duration-200"
-                >
-                  <social.icon className="w-4 h-4" />
-                </a>
-              ))}
+              <a
+                href="https://x.com/renteasy"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="X"
+                className="p-2 rounded-xl bg-gray-800 hover:bg-blue-600 text-gray-400 hover:text-white transition-all duration-200"
+              >
+                <TbBrandX className="w-4 h-4" />
+              </a>
+              <a
+                href="https://facebook.com/renteasy"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook"
+                className="p-2 rounded-xl bg-gray-800 hover:bg-blue-600 text-gray-400 hover:text-white transition-all duration-200"
+              >
+                <TbBrandFacebook className="w-4 h-4" />
+              </a>
+              <a
+                href="https://instagram.com/renteasy"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="p-2 rounded-xl bg-gray-800 hover:bg-blue-600 text-gray-400 hover:text-white transition-all duration-200"
+              >
+                <TbBrandInstagram className="w-4 h-4" />
+              </a>
+              <a
+                href="https://linkedin.com/company/renteasy"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn"
+                className="p-2 rounded-xl bg-gray-800 hover:bg-blue-600 text-gray-400 hover:text-white transition-all duration-200"
+              >
+                <TbBrandLinkedin className="w-4 h-4" />
+              </a>
             </div>
           </div>
 
-          {/* Links columns */}
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
               <h3 className="text-white font-semibold mb-4 font-heading">
@@ -114,7 +127,6 @@ export default function Footer() {
           ))}
         </div>
 
-        {/* Bottom bar */}
         <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-gray-500 text-sm">
             © {new Date().getFullYear()} RentEasy. All rights reserved.
