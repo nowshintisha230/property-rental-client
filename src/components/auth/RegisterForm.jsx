@@ -20,6 +20,8 @@ import {
   TbUpload,
   TbTrash,
   TbLink,
+  TbHome,
+  TbBuildingEstate,
 } from "react-icons/tb";
 import { useAuth } from "@/contexts/AuthContext";
 import toast from "react-hot-toast";
@@ -45,6 +47,46 @@ const PasswordRequirement = ({ met, label }) => (
   </div>
 );
 
+// ── Role option card (radio) ───────────────────────────────────────────────
+const RoleOption = ({ value, selected, onSelect, icon, title, desc }) => (
+  <button
+    type="button"
+    onClick={() => onSelect(value)}
+    aria-pressed={selected}
+    className={`relative flex-1 flex flex-col items-start gap-1 p-3 sm:p-4 rounded-xl border-2 text-left transition-colors ${
+      selected
+        ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+        : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 hover:border-gray-300 dark:hover:border-gray-600"
+    }`}
+  >
+    <div className="flex items-center justify-between w-full">
+      <span
+        className={`flex items-center justify-center w-8 h-8 rounded-lg ${
+          selected
+            ? "bg-blue-500 text-white"
+            : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
+        }`}
+      >
+        {icon}
+      </span>
+      {/* radio indicator */}
+      <span
+        className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+          selected
+            ? "border-blue-500"
+            : "border-gray-300 dark:border-gray-600"
+        }`}
+      >
+        {selected && <span className="w-2 h-2 rounded-full bg-blue-500" />}
+      </span>
+    </div>
+    <p className="text-sm font-semibold text-gray-900 dark:text-white mt-1">
+      {title}
+    </p>
+    <p className="text-xs text-gray-500 dark:text-gray-400">{desc}</p>
+  </button>
+);
+
 export default function RegisterForm() {
   const { register: registerUser, googleLogin } = useAuth();
   const router = useRouter();
@@ -53,6 +95,9 @@ export default function RegisterForm() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+
+  // ── Role selection (Tenant / Owner) ──────────────────────────────────────
+  const [selectedRole, setSelectedRole] = useState("tenant"); // default Tenant
 
   // Photo state
   const [photoMode, setPhotoMode] = useState("upload"); // "upload" | "url"
@@ -152,11 +197,12 @@ export default function RegisterForm() {
         email: data.email.trim(),
         password: data.password,
         photoURL: finalPhotoUrl || undefined,
-        role: "owner", // ⬅️ এই ফর্ম দিয়ে register করলে সবাই Owner হবে
+        role: selectedRole, // ⬅️ user-selected role (tenant / owner)
       });
 
       toast.success(`Welcome to RentEasy, ${user.name}!`);
-      router.push("/owner"); // ⬅️ owner dashboard-এ redirect
+      // ⬅️ redirect based on the selected role
+      router.push(selectedRole === "owner" ? "/owner" : "/tenant");
     } catch (err) {
       setIsUploadingPhoto(false);
       toast.error(
@@ -170,9 +216,10 @@ export default function RegisterForm() {
   const handleGoogleLogin = async () => {
     setIsGoogleLoading(true);
     try {
-      const user = await googleLogin();
+      // ⬅️ Google sign-up ALWAYS becomes Tenant, regardless of the radio selection above.
+      const user = await googleLogin({ role: "tenant" });
       toast.success(`Welcome to RentEasy, ${user.name}!`);
-      router.push("/tenant"); // Google দিয়ে আসলে role tenant, তাই tenant dashboard-এ
+      router.push("/tenant");
     } catch (err) {
       toast.error(
         err.response?.data?.message ||
@@ -208,10 +255,12 @@ export default function RegisterForm() {
         {/* Header */}
         <div className="mb-6 sm:mb-8">
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white font-heading mb-1.5 sm:mb-2">
-            Create Owner Account
+            Create an Account
           </h2>
           <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">
-            List your properties and start earning today
+            {selectedRole === "owner"
+              ? "List your properties and start earning today"
+              : "Find and book your next place to stay"}
           </p>
         </div>
 
@@ -247,10 +296,13 @@ export default function RegisterForm() {
               </svg>
             )
           }
-          className="h-11 sm:h-12 text-sm sm:text-base font-semibold text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-700 mb-5 sm:mb-6"
+          className="h-11 sm:h-12 text-sm sm:text-base font-semibold text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-700 mb-2"
         >
           Continue with Google
         </Button>
+        <p className="text-center text-xs text-gray-400 dark:text-gray-500 mb-5 sm:mb-6">
+          Google sign-up always creates a <strong>Tenant</strong> account
+        </p>
 
         <div className="flex items-center gap-3 sm:gap-4 mb-5 sm:mb-6">
           <Divider className="flex-1" />
@@ -258,6 +310,31 @@ export default function RegisterForm() {
             or register with email
           </span>
           <Divider className="flex-1" />
+        </div>
+
+        {/* ── Role selection (radio cards) ─────────────────────────────────── */}
+        <div className="mb-5 sm:mb-6">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            I want to register as
+          </label>
+          <div className="flex gap-3">
+            <RoleOption
+              value="tenant"
+              selected={selectedRole === "tenant"}
+              onSelect={setSelectedRole}
+              icon={<TbHome className="w-4 h-4" />}
+              title="Tenant"
+              desc="Find & book rentals"
+            />
+            <RoleOption
+              value="owner"
+              selected={selectedRole === "owner"}
+              onSelect={setSelectedRole}
+              icon={<TbBuildingEstate className="w-4 h-4" />}
+              title="Owner"
+              desc="List your properties"
+            />
+          </div>
         </div>
 
         {/* Register Form */}
@@ -575,7 +652,11 @@ export default function RegisterForm() {
             }
             className="h-11 sm:h-12 text-sm sm:text-base font-semibold btn-gradient text-white"
           >
-            {isUploadingPhoto ? "Uploading photo…" : "Create Owner Account"}
+            {isUploadingPhoto
+              ? "Uploading photo…"
+              : selectedRole === "owner"
+              ? "Create Owner Account"
+              : "Create Tenant Account"}
           </Button>
         </form>
 
