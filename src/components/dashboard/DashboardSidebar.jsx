@@ -94,7 +94,7 @@ export default function DashboardSidebar({ role }) {
   return (
     <aside
       className={cn(
-        "hidden md:flex flex-col h-[calc(100vh-64px)] sticky top-16 bg-gray-900 border-r border-gray-800 transition-all duration-300 relative",
+        "hidden md:flex flex-col h-[calc(100vh-64px)] sticky top-16 bg-gray-900 border-r border-gray-800 rounded-xl transition-all duration-300 relative",
         collapsed ? "w-20" : "w-64"
       )}
     >
