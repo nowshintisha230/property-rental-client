@@ -94,11 +94,12 @@ export default function DashboardSidebar({ role }) {
   return (
     <aside
       className={cn(
-        "hidden md:flex flex-col h-[calc(100vh-64px)] sticky top-16 bg-gray-900 border-r border-gray-800 transition-all duration-300 overflow-y-auto relative",
+        "hidden md:flex flex-col h-[calc(100vh-64px)] sticky top-16 bg-gray-900 border-r border-gray-800 transition-all duration-300 relative",
         collapsed ? "w-20" : "w-64"
       )}
     >
-      {/* Collapse toggle */}
+      {/* Collapse toggle — lives directly on <aside> (no overflow here) so it
+          isn't clipped when it pokes outside the right edge */}
       <button
         onClick={() => setCollapsed((c) => !c)}
         className="absolute -right-3 top-6 w-6 h-6 bg-gray-800 border border-gray-700 rounded-full flex items-center justify-center shadow-md hover:bg-gray-700 transition-colors z-10"
@@ -110,7 +111,7 @@ export default function DashboardSidebar({ role }) {
         )}
       </button>
 
-      <div className="flex flex-col h-full p-4">
+      <div className="flex flex-col h-full p-4 overflow-y-auto">
         {/* User profile summary */}
         <div
           className={cn(
