@@ -10,6 +10,24 @@ import PropertyCard from "@/components/property/PropertyCard";
 import { PropertyCardSkeleton } from "@/components/ui/SkeletonCard";
 import axiosInstance from "@/lib/axios";
 
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.08,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: "easeOut" },
+  },
+};
+
 export default function FeaturedProperties() {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -33,10 +51,26 @@ export default function FeaturedProperties() {
           transition={{ duration: 0.5 }}
           className="text-center mb-12"
         >
-          <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 dark:text-blue-400 mb-3">
-            <TbSparkles className="w-4 h-4" />
+          <motion.span
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4 }}
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 dark:text-blue-400 mb-3"
+          >
+            <motion.span
+              animate={{ rotate: [0, 15, -15, 0] }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                repeatDelay: 1.5,
+                ease: "easeInOut",
+              }}
+            >
+              <TbSparkles className="w-4 h-4" />
+            </motion.span>
             Featured Listings
-          </span>
+          </motion.span>
           <h2 className="section-title">
             Handpicked{" "}
             <span className="gradient-text">Properties</span>
@@ -48,41 +82,70 @@ export default function FeaturedProperties() {
         </motion.div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.1 }}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
           {loading
             ? Array.from({ length: 6 }).map((_, i) => (
-                <PropertyCardSkeleton key={i} />
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3, delay: i * 0.05 }}
+                >
+                  <PropertyCardSkeleton />
+                </motion.div>
               ))
-            : properties.map((property, i) => (
+            : properties.map((property) => (
                 <motion.div
                   key={property._id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: i * 0.08 }}
+                  variants={cardVariants}
+                  whileHover={{ y: -6 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 >
                   <PropertyCard property={property} />
                 </motion.div>
               ))}
-        </div>
+        </motion.div>
 
         {/* CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
           className="text-center mt-12"
         >
-          <Button
-            as={Link}
-            href="/properties"
-            size="lg"
-            endContent={<TbArrowRight className="w-5 h-5" />}
-            className="font-semibold btn-gradient text-white px-8"
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.97 }}
+            className="inline-block"
           >
-            View All Properties
-          </Button>
+            <Button
+              as={Link}
+              href="/properties"
+              size="lg"
+              endContent={
+                <motion.span
+                  animate={{ x: [0, 4, 0] }}
+                  transition={{
+                    duration: 1.2,
+                    repeat: Infinity,
+                    repeatDelay: 0.5,
+                  }}
+                >
+                  <TbArrowRight className="w-5 h-5" />
+                </motion.span>
+              }
+              className="font-semibold btn-gradient text-white px-8"
+            >
+              View All Properties
+            </Button>
+          </motion.div>
         </motion.div>
       </div>
     </section>
