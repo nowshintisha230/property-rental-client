@@ -104,12 +104,17 @@ export function AuthProvider({ children }) {
 
   // Email/password register
   const register = useCallback(
-    async ({ name, email, password, photo, photoURL }) => {
+    async ({ name, email, password, photo, photoURL, role }) => {
       const res = await axiosInstance.post("/auth/register", {
         name,
         email,
         password,
         photo: photo || photoURL || "",
+        // ⬅️ pass the user-selected role through to the backend.
+        // The backend is the one that should actually enforce this —
+        // e.g. only allow "tenant" / "owner" and never trust "admin"
+        // coming from the client.
+        role: role || "tenant",
       });
       const { user: userData, token: userToken } = res.data.data;
       saveSession(userData, userToken);
@@ -130,6 +135,11 @@ export function AuthProvider({ children }) {
   );
 
   // Google OAuth login
+  // NOTE: Google sign-up/sign-in is intentionally NOT given a role
+  // parameter from the client. The backend's /auth/google route must
+  // be the one that decides the role — defaulting brand-new Google
+  // users to "tenant" — since this path bypasses the register form
+  // entirely and a client-supplied role here can't be trusted.
   const googleLogin = useCallback(async () => {
     const result = await signInWithPopup(auth, googleProvider);
     const firebaseUser = result.user;
