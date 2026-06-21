@@ -10,10 +10,26 @@ const protectedRoutes = {
   "/payment/success": ["tenant"],
 };
 
+// Matches a single dynamic property id segment, e.g. /properties/64f1...
+// but NOT the public listing page itself (/properties or /properties/).
+const PROPERTY_DETAILS_PATTERN = /^\/properties\/[^/]+\/?$/;
+
 export function middleware(request) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get("token")?.value;
   const userCookie = request.cookies.get("user")?.value;
+
+  // ── Property Details page: private, but open to ANY logged-in role ──────
+  // (Tenant / Owner / Admin can all view a property's details — only the
+  // /properties listing itself stays public.)
+  if (PROPERTY_DETAILS_PATTERN.test(pathname)) {
+    if (!token) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+    return NextResponse.next();
+  }
 
   // Check if route needs protection
   const protectedBase = Object.keys(protectedRoutes).find((base) =>
@@ -60,6 +76,7 @@ export const config = {
     "/owner/:path*",
     "/admin/:path*",
     "/payment/:path*",
+    "/properties/:path*",
     "/login",
     "/register",
   ],
