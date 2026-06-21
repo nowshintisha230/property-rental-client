@@ -2,7 +2,6 @@
 import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import Providers from "@/providers/Providers";
-import DarkModeScript from "@/components/ui/DarkModeScript";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -35,8 +34,7 @@ export const metadata = {
   authors: [{ name: "RentEasy Team" }],
   openGraph: {
     title: "RentEasy — Find Your Perfect Home",
-    description:
-      "Discover and book rental properties with ease.",
+    description: "Discover and book rental properties with ease.",
     type: "website",
     locale: "en_US",
   },
@@ -52,12 +50,9 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${poppins.variable}`}
+      className={`dark ${inter.variable} ${poppins.variable}`}
       suppressHydrationWarning
     >
-      <head>
-        <DarkModeScript />
-      </head>
       <body className="antialiased">
         <Providers>{children}</Providers>
       </body>
