@@ -1,4 +1,4 @@
-# 🏠 NestStay — Client Side
+# 🏠 RentEasy — Client Side
 
 This is the Client/Front-end repository for the Property Rental & Booking Platform. Tenants, Owners, and Admins can each browse, book, pay for, and manage properties through their own role-based dashboards.
 
