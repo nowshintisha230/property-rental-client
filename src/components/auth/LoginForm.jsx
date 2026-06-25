@@ -185,7 +185,7 @@ export default function LoginForm() {
               Password
             </label>
             <Link
-              href="/forgot-password"
+              href="/forgot-password" prefetch={false}
               className="text-xs text-blue-500 hover:text-blue-600 font-medium"
             >
               Forgot password?
