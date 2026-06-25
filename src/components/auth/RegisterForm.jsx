@@ -47,7 +47,7 @@ const PasswordRequirement = ({ met, label }) => (
   </div>
 );
 
-// ── Role option card (radio) ───────────────────────────────────────────────
+
 const RoleOption = ({ value, selected, onSelect, icon, title, desc }) => (
   <button
     type="button"
@@ -69,7 +69,7 @@ const RoleOption = ({ value, selected, onSelect, icon, title, desc }) => (
       >
         {icon}
       </span>
-      {/* radio indicator */}
+   
       <span
         className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
           selected
@@ -96,17 +96,16 @@ export default function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
-  // ── Role selection (Tenant / Owner) ──────────────────────────────────────
-  const [selectedRole, setSelectedRole] = useState("tenant"); // default Tenant
+  const [selectedRole, setSelectedRole] = useState("tenant"); 
 
-  // Photo state
-  const [photoMode, setPhotoMode] = useState("upload"); // "upload" | "url"
+  
+  const [photoMode, setPhotoMode] = useState("upload"); 
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [photoUrl, setPhotoUrl] = useState("");
   const [photoUrlPreview, setPhotoUrlPreview] = useState("");
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
-  const [uploadedPhotoUrl, setUploadedPhotoUrl] = useState(""); // final URL after imgbb upload
+  const [uploadedPhotoUrl, setUploadedPhotoUrl] = useState(""); // 
   const fileInputRef = useRef(null);
 
   const {
@@ -131,7 +130,7 @@ export default function RegisterForm() {
     lowercase: /[a-z]/.test(password),
   };
 
-  // ── Photo handlers ──────────────────────────────────────────────────────────
+  
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
@@ -148,7 +147,7 @@ export default function RegisterForm() {
 
     setPhotoFile(file);
     setPhotoPreview(URL.createObjectURL(file));
-    setUploadedPhotoUrl(""); // reset previous upload
+    setUploadedPhotoUrl("");
   };
 
   const handleRemoveFile = () => {
@@ -176,7 +175,7 @@ export default function RegisterForm() {
     setPhotoUrlPreview(val);
   };
 
-  // ── Submit ──────────────────────────────────────────────────────────────────
+  
 
   const onSubmit = async (data) => {
     setIsLoading(true);
@@ -197,11 +196,11 @@ export default function RegisterForm() {
         email: data.email.trim(),
         password: data.password,
         photoURL: finalPhotoUrl || undefined,
-        role: selectedRole, // ⬅️ user-selected role (tenant / owner)
+        role: selectedRole,
       });
 
       toast.success(`Welcome to RentEasy, ${user.name}!`);
-      // ⬅️ redirect based on the selected role
+    
       router.push(selectedRole === "owner" ? "/owner" : "/tenant");
     } catch (err) {
       setIsUploadingPhoto(false);
@@ -216,7 +215,7 @@ export default function RegisterForm() {
   const handleGoogleLogin = async () => {
     setIsGoogleLoading(true);
     try {
-      // ⬅️ Google sign-up ALWAYS becomes Tenant, regardless of the radio selection above.
+     
       const user = await googleLogin({ role: "tenant" });
       toast.success(`Welcome to RentEasy, ${user.name}!`);
       router.push("/tenant");
@@ -230,7 +229,7 @@ export default function RegisterForm() {
     }
   };
 
-  // ── Shared input style ──────────────────────────────────────────────────────
+  
   const inputBase =
     "w-full rounded-xl border border-gray-200 dark:border-gray-700 " +
     "bg-white dark:bg-gray-900 text-gray-900 dark:text-white " +
@@ -241,7 +240,7 @@ export default function RegisterForm() {
 
   const inputError = "border-red-400 focus:ring-red-400";
 
-  // current photo preview (either file or url)
+  
   const activePreview = photoMode === "upload" ? photoPreview : photoUrlPreview;
 
   return (
@@ -252,7 +251,7 @@ export default function RegisterForm() {
         transition={{ duration: 0.4 }}
         className="w-full max-w-sm sm:max-w-md"
       >
-        {/* Header */}
+      
         <div className="mb-6 sm:mb-8">
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white font-heading mb-1.5 sm:mb-2">
             Create an Account
@@ -264,7 +263,7 @@ export default function RegisterForm() {
           </p>
         </div>
 
-        {/* Google Signup */}
+     
         <Button
           fullWidth
           variant="bordered"
@@ -312,7 +311,7 @@ export default function RegisterForm() {
           <Divider className="flex-1" />
         </div>
 
-        {/* ── Role selection (radio cards) ─────────────────────────────────── */}
+       
         <div className="mb-5 sm:mb-6">
           <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             I want to register as
@@ -337,13 +336,13 @@ export default function RegisterForm() {
           </div>
         </div>
 
-        {/* Register Form */}
+    
         <form
           onSubmit={handleSubmit(onSubmit)}
           noValidate
           className="space-y-4 sm:space-y-5"
         >
-          {/* ── Full Name ──────────────────────────────────────────────────── */}
+        
           <div>
             <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-1.5">
               Full Name
@@ -367,7 +366,7 @@ export default function RegisterForm() {
             )}
           </div>
 
-          {/* ── Email ──────────────────────────────────────────────────────── */}
+        
           <div>
             <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-1.5">
               Email Address
@@ -393,14 +392,14 @@ export default function RegisterForm() {
             )}
           </div>
 
-          {/* ── Profile Photo ───────────────────────────────────────────────── */}
+      
           <div>
             <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-1.5">
               Profile Photo{" "}
               <span className="font-normal text-gray-400">(optional)</span>
             </label>
 
-            {/* Mode toggle */}
+    
             <div className="flex rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 mb-3">
               <button
                 type="button"
@@ -429,7 +428,7 @@ export default function RegisterForm() {
             </div>
 
             <AnimatePresence mode="wait">
-              {/* ── Upload mode ── */}
+          
               {photoMode === "upload" && (
                 <motion.div
                   key="upload"
@@ -439,7 +438,7 @@ export default function RegisterForm() {
                   transition={{ duration: 0.18 }}
                 >
                   {!photoPreview ? (
-                    // Drop zone
+              
                     <label
                       htmlFor="photo-upload"
                       className="flex flex-col items-center justify-center gap-2 w-full h-28 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 cursor-pointer hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors group"
@@ -463,7 +462,7 @@ export default function RegisterForm() {
                       />
                     </label>
                   ) : (
-                    // Preview
+            
                     <div className="flex items-center gap-3 p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
                       <img
                         src={photoPreview}
@@ -496,7 +495,7 @@ export default function RegisterForm() {
                 </motion.div>
               )}
 
-              {/* ── URL mode ── */}
+           
               {photoMode === "url" && (
                 <motion.div
                   key="url"
@@ -516,7 +515,7 @@ export default function RegisterForm() {
                       className={`${inputBase} pl-10`}
                     />
                   </div>
-                  {/* URL preview */}
+            
                   <AnimatePresence>
                     {photoUrlPreview && (
                       <motion.div
@@ -542,7 +541,6 @@ export default function RegisterForm() {
             </AnimatePresence>
           </div>
 
-          {/* ── Password ───────────────────────────────────────────────────── */}
           <div>
             <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-1.5">
               Password
@@ -592,7 +590,7 @@ export default function RegisterForm() {
             )}
           </div>
 
-          {/* ── Confirm Password ───────────────────────────────────────────── */}
+       
           <div>
             <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-1.5">
               Confirm Password
@@ -627,10 +625,10 @@ export default function RegisterForm() {
             )}
           </div>
 
-          {/* Terms */}
+       
           <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
             By creating an account, you agree to our{" "}
-            <Link href="/terms" className="text-blue-500 hover:underline">
+            <Link href="/terms" prefetch={false} className="text-blue-500 hover:underline">
               Terms of Service
             </Link>{" "}
             and{" "}
@@ -640,7 +638,7 @@ export default function RegisterForm() {
             .
           </p>
 
-          {/* Submit */}
+       
           <Button
             type="submit"
             fullWidth
@@ -660,7 +658,7 @@ export default function RegisterForm() {
           </Button>
         </form>
 
-        {/* Login link */}
+       
         <p className="text-center text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-5 sm:mt-6">
           Already have an account?{" "}
           <Link
