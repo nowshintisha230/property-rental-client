@@ -604,7 +604,7 @@ export default function AddPropertyClient() {
                 {ALL_AMENITIES.map((amenity) => {
                   const selected = amenities.includes(amenity);
                   return (
-                    <button
+                    <button 
                       key={amenity}
                       type="button"
                       onClick={() => toggleAmenity(amenity)}
@@ -929,7 +929,7 @@ export default function AddPropertyClient() {
             </Button>
           ) : (
             <Button
-              type="submit"
+              type="button"
               isLoading={isSubmitting}
               isDisabled={
                 images.filter((i) => i.uploaded).length === 0 ||
