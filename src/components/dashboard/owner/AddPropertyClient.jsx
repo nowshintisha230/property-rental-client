@@ -930,6 +930,8 @@ export default function AddPropertyClient() {
           ) : (
             <Button
               type="button"
+              onPress={handleSubmit(onSubmit)}
+              
               isLoading={isSubmitting}
               isDisabled={
                 images.filter((i) => i.uploaded).length === 0 ||
