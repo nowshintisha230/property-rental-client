@@ -63,7 +63,7 @@ export default function PaymentSuccessClient() {
 
   const bookingId = searchParams.get("bookingId");
   const paymentIntentId = searchParams.get("paymentIntentId");
-  const amount = parseFloat(searchParams.get("amount") || "0");
+  const [amount, setAmount] = useState(0);
   const propertyId = searchParams.get("propertyId");
 
   const [booking, setBooking] = useState(null);
@@ -90,7 +90,17 @@ export default function PaymentSuccessClient() {
           requests.push(
             axiosInstance
               .get(`/bookings/${bookingId}`)
-              .then((res) => setBooking(res.data.data.booking))
+              .then((res) => {
+                setBooking(res.data.data.booking);
+                setAmount(res.data.data.booking.amount);
+              })
+              .catch(() => {})
+          );
+        } else if (paymentIntentId) {
+          requests.push(
+            axiosInstance
+              .get(`/payments/${paymentIntentId}`)
+              .then((res) => setAmount(res.data.data.amount))
               .catch(() => {})
           );
         }
@@ -111,7 +121,7 @@ export default function PaymentSuccessClient() {
     };
 
     fetchData();
-  }, [bookingId, propertyId]);
+  }, [bookingId, paymentIntentId, propertyId]);
 
   const handleDownloadPDF = async () => {
     if (!booking) {
@@ -147,9 +157,7 @@ export default function PaymentSuccessClient() {
             <ConfettiParticle
               key={i}
               delay={i * 0.05}
-              color={
-                confettiColors[i % confettiColors.length]
-              }
+              color={confettiColors[i % confettiColors.length]}
             />
           ))}
         </div>
@@ -163,7 +171,6 @@ export default function PaymentSuccessClient() {
           transition={{ duration: 0.5, type: "spring" }}
           className="text-center mb-10"
         >
-          {/* Animated checkmark */}
           <div className="relative inline-block mb-6">
             <motion.div
               initial={{ scale: 0 }}
@@ -178,7 +185,6 @@ export default function PaymentSuccessClient() {
             >
               <TbCheck className="w-12 h-12 text-white stroke-[3]" />
             </motion.div>
-            {/* Ripple rings */}
             {[1, 2, 3].map((i) => (
               <motion.div
                 key={i}
@@ -261,7 +267,6 @@ export default function PaymentSuccessClient() {
               Booking Confirmation
             </h2>
 
-            {/* Property summary */}
             {(property || booking?.propertySnapshot) && (
               <div className="flex gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-gray-800/50 mb-5">
                 {(property?.images?.[0] || booking?.propertySnapshot?.image) && (
@@ -297,7 +302,6 @@ export default function PaymentSuccessClient() {
               </div>
             )}
 
-            {/* Booking details grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
                 {
@@ -350,7 +354,6 @@ export default function PaymentSuccessClient() {
               ))}
             </div>
 
-            {/* Additional notes */}
             {booking?.additionalNotes && (
               <div className="mt-4 p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
                 <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">
@@ -464,9 +467,9 @@ export default function PaymentSuccessClient() {
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
           className="text-center text-xs text-gray-400 dark:text-gray-500 mt-8"
-        >
+        ><a>
           Need help? Contact us at{" "}
-          <a
+          
             href="mailto:support@renteasy.com"
             className="text-blue-500 hover:underline"
           >
