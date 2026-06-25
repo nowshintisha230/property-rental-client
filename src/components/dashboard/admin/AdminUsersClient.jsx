@@ -31,7 +31,10 @@ import { formatDate, debounce } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import toast from "react-hot-toast";
 
-const ROLES = ["tenant", "owner", "admin"];
+// "admin" intentionally excluded — admin role can no longer be
+// assigned from this UI. Existing admin accounts (if any) are
+// unaffected; this only limits what this picker offers going forward.
+const ROLES = ["tenant", "owner"];
 
 const roleColors = {
   admin: "danger",
@@ -93,6 +96,10 @@ export default function AdminUsersClient() {
 
   const openRoleModal = (user) => {
     setRoleModal(user);
+    // If the user already has a role outside the allowed picker
+    // options (e.g. an existing "admin"), default the picker
+    // selection to their current role anyway so "Update Role" stays
+    // disabled until the admin actually picks tenant/owner.
     setNewRole(user.role);
   };
 
@@ -409,7 +416,7 @@ export default function AdminUsersClient() {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Select New Role
                   </label>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-2 gap-2">
                     {ROLES.map((role) => (
                       <button
                         key={role}
@@ -417,9 +424,7 @@ export default function AdminUsersClient() {
                         onClick={() => setNewRole(role)}
                         className={`py-2.5 px-3 rounded-xl border-2 text-sm font-medium capitalize transition-all ${
                           newRole === role
-                            ? role === "admin"
-                              ? "border-red-400 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400"
-                              : role === "owner"
+                            ? role === "owner"
                               ? "border-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400"
                               : "border-blue-400 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
                             : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300"
@@ -430,15 +435,6 @@ export default function AdminUsersClient() {
                     ))}
                   </div>
                 </div>
-
-                {/* Warning if assigning admin */}
-                {newRole === "admin" && (
-                  <div className="p-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800">
-                    <p className="text-xs text-red-700 dark:text-red-400">
-                      ⚠️ Granting admin access gives full platform control. Only assign this to trusted team members.
-                    </p>
-                  </div>
-                )}
               </div>
             )}
           </ModalBody>
