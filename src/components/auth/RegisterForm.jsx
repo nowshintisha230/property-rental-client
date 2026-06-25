@@ -632,7 +632,7 @@ export default function RegisterForm() {
               Terms of Service
             </Link>{" "}
             and{" "}
-            <Link href="/privacy" className="text-blue-500 hover:underline">
+            <Link href="/privacy" prefetch={false} className="text-blue-500 hover:underline">
               Privacy Policy
             </Link>
             .
