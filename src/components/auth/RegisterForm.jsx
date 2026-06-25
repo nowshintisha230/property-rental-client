@@ -213,22 +213,27 @@ export default function RegisterForm() {
   };
 
   const handleGoogleLogin = async () => {
-    setIsGoogleLoading(true);
-    try {
-     
-      const user = await googleLogin({ role: "tenant" });
-      toast.success(`Welcome to RentEasy, ${user.name}!`);
-      router.push("/tenant");
-    } catch (err) {
-      toast.error(
-        err.response?.data?.message ||
-          "Google sign-up failed. Please try again."
-      );
-    } finally {
-      setIsGoogleLoading(false);
-    }
-  };
-
+  setIsGoogleLoading(true);
+  try {
+    const user = await googleLogin({ role: "tenant" });
+    toast.success(`Welcome to RentEasy, ${user.name}!`);
+    router.push("/tenant");
+  } catch (err) {
+    console.error("Google login error →", {
+      code: err.code,
+      message: err.message,
+      backendMessage: err.response?.data?.message,
+      full: err,
+    });
+    toast.error(
+      err.response?.data?.message ||
+        err.message ||
+        "Google sign-up failed. Please try again."
+    );
+  } finally {
+    setIsGoogleLoading(false);
+  }
+};
   
   const inputBase =
     "w-full rounded-xl border border-gray-200 dark:border-gray-700 " +
