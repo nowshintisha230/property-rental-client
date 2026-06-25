@@ -467,9 +467,9 @@ export default function PaymentSuccessClient() {
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
           className="text-center text-xs text-gray-400 dark:text-gray-500 mt-8"
-        ><a>
+        >
           Need help? Contact us at{" "}
-          
+          <a 
             href="mailto:support@renteasy.com"
             className="text-blue-500 hover:underline"
           >
