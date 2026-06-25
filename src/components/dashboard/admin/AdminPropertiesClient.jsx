@@ -164,7 +164,7 @@ export default function AdminPropertiesClient() {
             Review, approve, reject, and manage all platform listings
           </p>
         </div>
-        <Button
+        <Button type="button"
           variant="bordered"
           size="sm"
           startContent={<TbRefresh className="w-4 h-4" />}
@@ -196,7 +196,7 @@ export default function AdminPropertiesClient() {
       {/* Status filter tabs */}
       <div className="flex flex-wrap gap-2 mb-6">
         {STATUS_FILTERS.map((s) => (
-          <button
+          <button type="button"
             key={s}
             onClick={() => {
               setStatusFilter(s);
@@ -351,7 +351,7 @@ export default function AdminPropertiesClient() {
                     <td className="table-cell">
                       <div className="flex items-center gap-1">
                         <Tooltip content="View property">
-                          <Button
+                          <Button type="button"
                             isIconOnly
                             size="sm"
                             variant="light"
@@ -365,7 +365,7 @@ export default function AdminPropertiesClient() {
 
                         {property.status !== "approved" && (
                           <Tooltip content="Approve">
-                            <Button
+                            <Button type="button"
                               isIconOnly
                               size="sm"
                               variant="flat"
@@ -380,7 +380,7 @@ export default function AdminPropertiesClient() {
 
                         {property.status !== "rejected" && (
                           <Tooltip content="Reject with feedback">
-                            <Button
+                            <Button type="button"
                               isIconOnly
                               size="sm"
                               variant="flat"
@@ -397,7 +397,7 @@ export default function AdminPropertiesClient() {
                         )}
 
                         <Tooltip content="Delete property">
-                          <Button
+                          <Button type="button"
                             isIconOnly
                             size="sm"
                             variant="flat"
@@ -423,7 +423,7 @@ export default function AdminPropertiesClient() {
               {pagination.total} total properties
             </p>
             <div className="flex gap-2">
-              <Button
+              <Button type="button"
                 size="sm"
                 variant="bordered"
                 isDisabled={page <= 1}
@@ -432,7 +432,7 @@ export default function AdminPropertiesClient() {
               >
                 Previous
               </Button>
-              <Button
+              <Button type="button"
                 size="sm"
                 variant="bordered"
                 isDisabled={page >= pagination.pages}
@@ -516,7 +516,7 @@ export default function AdminPropertiesClient() {
             )}
           </ModalBody>
           <ModalFooter className="border-t border-gray-100 dark:border-gray-800 pt-4">
-            <Button
+            <Button type="button"
               variant="bordered"
               onPress={() => {
                 setRejectModal(null);
@@ -526,7 +526,7 @@ export default function AdminPropertiesClient() {
             >
               Cancel
             </Button>
-            <Button
+            <Button type="button"
               color="warning"
               isLoading={!!actionLoading}
               isDisabled={rejectReason.trim().length < 10}
@@ -567,14 +567,14 @@ export default function AdminPropertiesClient() {
             </div>
           </ModalBody>
           <ModalFooter>
-            <Button
+            <Button type="button"
               variant="bordered"
               onPress={() => setDeleteModal(null)}
               className="font-semibold"
             >
               Cancel
             </Button>
-            <Button
+            <Button type="button"
               color="danger"
               isLoading={deleteLoading}
               onPress={handleDelete}

@@ -194,6 +194,7 @@ export default function AddPropertyClient() {
   };
 
   const onSubmit = async (data) => {
+    if (step !== 4) return;
     const uploadedImages = images.filter((img) => img.uploaded);
     if (uploadedImages.length === 0) {
       toast.error("Please wait for images to finish uploading");
