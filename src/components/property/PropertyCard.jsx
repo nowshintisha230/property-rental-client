@@ -3,7 +3,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Button, Chip } from "@heroui/react";
 import {
@@ -12,25 +11,11 @@ import {
   TbBath,
   TbRuler,
   TbStar,
-  TbHeart,
   TbArrowRight,
-  TbEye,
 } from "react-icons/tb";
-import { useAuth } from "@/contexts/AuthContext";
 import { formatCurrency, truncateText } from "@/lib/utils";
 
 export default function PropertyCard({ property }) {
-  const { isAuthenticated } = useAuth();
-  const router = useRouter();
-
-  const handleViewDetails = () => {
-    if (!isAuthenticated) {
-      router.push(`/login?redirect=/properties/${property._id}`);
-      return;
-    }
-    router.push(`/properties/${property._id}`);
-  };
-
   const primaryImage =
     property.images?.[0] ||
     "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=600&q=80";
@@ -47,7 +32,7 @@ export default function PropertyCard({ property }) {
           src={primaryImage}
           alt={property.title}
           fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           className="object-cover group-hover:scale-105 transition-transform duration-500"
         />
         {/* Overlay badges */}
@@ -117,10 +102,11 @@ export default function PropertyCard({ property }) {
 
         {/* CTA */}
         <Button
+          as={Link}
+          href={`/properties/${property._id}`}
           fullWidth
           size="sm"
           endContent={<TbArrowRight className="w-4 h-4" />}
-          onPress={handleViewDetails}
           className="font-semibold btn-gradient text-white"
         >
           View Details

@@ -1,7 +1,8 @@
-// src/app/layout.jsx — complete updated version
+// src/app/layout.jsx
 import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import Providers from "@/providers/Providers";
+import DarkModeScript from "@/components/ui/DarkModeScript";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -22,37 +23,20 @@ export const metadata = {
     template: "%s | RentEasy",
   },
   description:
-    "Discover and book rental properties with ease. Browse apartments, houses, villas, and more. Connect with trusted property owners.",
-  keywords: [
-    "property rental",
-    "rent home",
-    "apartments for rent",
-    "house rental",
-    "booking platform",
-    "renteasy",
-  ],
-  authors: [{ name: "RentEasy Team" }],
-  openGraph: {
-    title: "RentEasy — Find Your Perfect Home",
-    description: "Discover and book rental properties with ease.",
-    type: "website",
-    locale: "en_US",
-  },
-  robots: { index: true, follow: true },
-};
-
-export const viewport = {
-  width: "device-width",
-  initialScale: 1,
+    "Discover and book rental properties with ease.",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`dark ${inter.variable} ${poppins.variable}`}
+      className={`${inter.variable} ${poppins.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        {/* ← এটা flash রোধ করে */}
+        <DarkModeScript />
+      </head>
       <body className="antialiased">
         <Providers>{children}</Providers>
       </body>

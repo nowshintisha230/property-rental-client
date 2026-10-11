@@ -4,7 +4,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Button, Select, SelectItem } from "@heroui/react";
+import { Button } from "@heroui/react";
 import {
   TbSearch,
   TbMapPin,
@@ -45,19 +45,16 @@ export default function Banner() {
   const handleSearch = (e) => {
     e.preventDefault();
     const params = new URLSearchParams();
-    if (searchData.location)
-      params.append("location", searchData.location);
+    if (searchData.location) params.append("location", searchData.location);
     if (searchData.propertyType)
       params.append("propertyType", searchData.propertyType);
-    if (searchData.minPrice)
-      params.append("minPrice", searchData.minPrice);
-    if (searchData.maxPrice)
-      params.append("maxPrice", searchData.maxPrice);
+    if (searchData.minPrice) params.append("minPrice", searchData.minPrice);
+    if (searchData.maxPrice) params.append("maxPrice", searchData.maxPrice);
     router.push(`/properties?${params.toString()}`);
   };
 
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden">
+    <section className="relative min-h-[65vh] flex items-center overflow-hidden bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
       {/* Background Image */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -65,19 +62,26 @@ export default function Banner() {
           backgroundImage: `url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1920&q=80')`,
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-gray-950/90 via-gray-950/70 to-gray-950/40" />
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-transparent to-transparent" />
+        {/* Light mode overlay: soft white wash so text stays dark & readable */}
+        <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/85 to-white/60 dark:hidden" />
+        {/* Dark mode overlay: original dark gradient */}
+        <div className="absolute inset-0 hidden dark:block bg-gradient-to-r from-gray-950/90 via-gray-950/70 to-gray-950/40" />
+
+        {/* Bottom fade — light version */}
+        <div className="absolute inset-0 bg-gradient-to-t from-white/90 via-transparent to-transparent dark:hidden" />
+        {/* Bottom fade — dark version */}
+        <div className="absolute inset-0 hidden dark:block bg-gradient-to-t from-gray-950/80 via-transparent to-transparent" />
       </div>
 
       {/* Animated background shapes */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
-          animate={{ scale: [1, 1.1, 1], opacity: [0.05, 0.08, 0.05] }}
+          animate={{ scale: [1, 1.1, 1], opacity: [0.08, 0.12, 0.08] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
           className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-blue-500"
         />
         <motion.div
-          animate={{ scale: [1.1, 1, 1.1], opacity: [0.05, 0.08, 0.05] }}
+          animate={{ scale: [1.1, 1, 1.1], opacity: [0.08, 0.12, 0.08] }}
           transition={{
             duration: 8,
             repeat: Infinity,
@@ -88,7 +92,7 @@ export default function Banner() {
         />
       </div>
 
-      <div className="relative z-10 section-container w-full py-24 md:py-32">
+      <div className="relative z-10 section-container w-full py-16 md:py-20">
         <div className="max-w-4xl">
           {/* Badge */}
           <motion.div
@@ -96,7 +100,7 @@ export default function Banner() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-sm font-medium mb-6">
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 border border-blue-200 text-blue-700 dark:bg-blue-500/20 dark:border-blue-400/30 dark:text-blue-300 text-sm font-medium mb-6 transition-colors duration-300">
               <TbStar className="w-4 h-4" />
               #1 Property Rental Platform
             </span>
@@ -107,10 +111,9 @@ export default function Banner() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white leading-tight font-heading mb-6"
+            className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight font-heading mb-5 text-gray-900 dark:text-white transition-colors duration-300"
           >
-            Find Your{" "}
-            <span className="gradient-text">Perfect</span>
+            Find Your <span className="gradient-text">Perfect</span>
             <br />
             Home Today
           </motion.h1>
@@ -120,11 +123,11 @@ export default function Banner() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-lg sm:text-xl text-gray-300 mb-10 max-w-2xl leading-relaxed"
+            className="text-base sm:text-lg mb-8 max-w-2xl leading-relaxed text-gray-600 dark:text-gray-300 transition-colors duration-300"
           >
             Discover thousands of verified rental properties across the
-            country. From cozy studios to luxury villas — your dream home
-            is just a search away.
+            country. From cozy studios to luxury villas — your dream home is
+            just a search away.
           </motion.p>
 
           {/* Search Form */}
@@ -135,7 +138,7 @@ export default function Banner() {
           >
             <form
               onSubmit={handleSearch}
-              className="bg-white dark:bg-gray-900 rounded-2xl p-4 shadow-2xl border border-gray-100 dark:border-gray-700"
+              className="bg-white dark:bg-gray-900 rounded-2xl p-4 shadow-2xl border border-gray-100 dark:border-gray-700 transition-colors duration-300"
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {/* Location */}
@@ -187,7 +190,7 @@ export default function Banner() {
                   </div>
                 </div>
 
-                {/* Price Range */}
+                {/* Min Price */}
                 <div>
                   <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1.5 ml-1">
                     Min Price
@@ -210,6 +213,7 @@ export default function Banner() {
                   </div>
                 </div>
 
+                {/* Max Price */}
                 <div>
                   <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1.5 ml-1">
                     Max Price
@@ -254,18 +258,20 @@ export default function Banner() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
-            className="flex flex-wrap gap-6 mt-10"
+            className="flex flex-wrap gap-6 mt-8"
           >
             {stats.map((stat, i) => (
               <div key={i} className="flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-white/10 border border-white/20">
-                  <stat.icon className="w-4 h-4 text-white" />
+                <div className="p-2 rounded-xl bg-white/70 border border-gray-200 dark:bg-white/10 dark:border-white/20 transition-colors duration-300">
+                  <stat.icon className="w-4 h-4 text-gray-900 dark:text-white transition-colors duration-300" />
                 </div>
                 <div>
-                  <p className="text-white font-bold text-lg leading-tight font-heading">
+                  <p className="font-bold text-lg leading-tight font-heading text-gray-900 dark:text-white transition-colors duration-300">
                     {stat.value}
                   </p>
-                  <p className="text-gray-400 text-xs">{stat.label}</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 transition-colors duration-300">
+                    {stat.label}
+                  </p>
                 </div>
               </div>
             ))}
@@ -277,14 +283,16 @@ export default function Banner() {
       <motion.div
         animate={{ y: [0, 10, 0] }}
         transition={{ duration: 2, repeat: Infinity }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/50"
+        className="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-gray-500 dark:text-white/50 transition-colors duration-300"
       >
-        <span className="text-xs font-medium">Scroll to explore</span>
-        <div className="w-5 h-8 border-2 border-white/30 rounded-full flex justify-center pt-1.5">
+        <span className="text-[10px] font-medium uppercase tracking-wider">
+          Scroll
+        </span>
+        <div className="w-4 h-7 border-2 border-gray-400/50 dark:border-white/30 rounded-full flex justify-center pt-1 transition-colors duration-300">
           <motion.div
-            animate={{ y: [0, 8, 0] }}
+            animate={{ y: [0, 7, 0] }}
             transition={{ duration: 1.5, repeat: Infinity }}
-            className="w-1 h-1.5 bg-white/60 rounded-full"
+            className="w-0.5 h-1.5 bg-gray-500/70 dark:bg-white/60 rounded-full transition-colors duration-300"
           />
         </div>
       </motion.div>

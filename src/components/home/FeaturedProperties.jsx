@@ -5,7 +5,12 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@heroui/react";
-import { TbArrowRight, TbSparkles, TbChevronLeft, TbChevronRight } from "react-icons/tb";
+import {
+  TbArrowRight,
+  TbSparkles,
+  TbChevronLeft,
+  TbChevronRight,
+} from "react-icons/tb";
 import PropertyCard from "@/components/property/PropertyCard";
 import { PropertyCardSkeleton } from "@/components/ui/SkeletonCard";
 import axiosInstance from "@/lib/axios";
@@ -31,10 +36,9 @@ const cardVariants = {
 export default function FeaturedProperties() {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [itemsPerPage, setItemsPerPage] = useState(2); // default desktop
+  const [itemsPerPage, setItemsPerPage] = useState(4);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Backend থেকে একবারে সব (৬টা) property fetch
   useEffect(() => {
     axiosInstance
       .get("/properties/featured")
@@ -43,20 +47,30 @@ export default function FeaturedProperties() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Screen size অনুযায়ী itemsPerPage সেট করা — mobile: 1, desktop (sm এবং তার উপরে): 2
+  // mobile (< 640px): 1 · tablet (640-1023px): 2 · desktop (>= 1024px): 4
   useEffect(() => {
-    const mq = window.matchMedia("(min-width: 640px)");
+    const mobileMq = window.matchMedia("(min-width: 640px)");
+    const desktopMq = window.matchMedia("(min-width: 1024px)");
 
-    const updateItemsPerPage = (matches) => {
-      setItemsPerPage(matches ? 2 : 1);
-      setCurrentPage(1); // resize হলে পেজ ১-এ রিসেট
+    const updateItemsPerPage = () => {
+      if (desktopMq.matches) {
+        setItemsPerPage(4);
+      } else if (mobileMq.matches) {
+        setItemsPerPage(2);
+      } else {
+        setItemsPerPage(1);
+      }
+      setCurrentPage(1);
     };
 
-    updateItemsPerPage(mq.matches);
+    updateItemsPerPage();
 
-    const handleChange = (e) => updateItemsPerPage(e.matches);
-    mq.addEventListener("change", handleChange);
-    return () => mq.removeEventListener("change", handleChange);
+    mobileMq.addEventListener("change", updateItemsPerPage);
+    desktopMq.addEventListener("change", updateItemsPerPage);
+    return () => {
+      mobileMq.removeEventListener("change", updateItemsPerPage);
+      desktopMq.removeEventListener("change", updateItemsPerPage);
+    };
   }, []);
 
   const totalPages = Math.ceil(properties.length / itemsPerPage) || 1;
@@ -103,8 +117,7 @@ export default function FeaturedProperties() {
             Featured Listings
           </motion.span>
           <h2 className="section-title">
-            Handpicked{" "}
-            <span className="gradient-text">Properties</span>
+            Handpicked <span className="gradient-text">Properties</span>
           </h2>
           <p className="section-subtitle">
             Explore our top-rated rental properties, carefully selected for
@@ -114,7 +127,7 @@ export default function FeaturedProperties() {
 
         {/* Grid */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {Array.from({ length: itemsPerPage }).map((_, i) => (
               <motion.div
                 key={i}
@@ -134,7 +147,7 @@ export default function FeaturedProperties() {
               initial="hidden"
               animate="visible"
               exit={{ opacity: 0 }}
-              className="grid grid-cols-1 sm:grid-cols-2 gap-6"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
             >
               {paginatedProperties.map((property) => (
                 <motion.div
@@ -172,9 +185,7 @@ export default function FeaturedProperties() {
                   isIconOnly
                   variant={pageNum === currentPage ? "solid" : "bordered"}
                   className={
-                    pageNum === currentPage
-                      ? "btn-gradient text-white"
-                      : ""
+                    pageNum === currentPage ? "btn-gradient text-white" : ""
                   }
                   onPress={() => handlePageChange(pageNum)}
                 >

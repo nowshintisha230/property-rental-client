@@ -12,7 +12,6 @@ import {
   TbLock,
   TbEye,
   TbEyeOff,
-  TbBrandGoogle,
   TbArrowRight,
 } from "react-icons/tb";
 import { useAuth } from "@/contexts/AuthContext";
@@ -150,7 +149,6 @@ export default function LoginForm() {
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
             Email Address
           </label>
-          {/* ✅ FIX: wrapper is relative, icon is pointer-events-none so it doesn't block clicks */}
           <div className="relative flex items-center">
             <TbMail className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
             <input
@@ -165,10 +163,10 @@ export default function LoginForm() {
                 },
               })}
               className={`
-                input-base w-full
-                pl-11 pr-4 py-3
+                input-base w-full py-3 pr-4
                 ${errors.email ? "border-red-400 focus:ring-red-400" : ""}
               `}
+              style={{ paddingLeft: "3rem" }}
             />
           </div>
           {errors.email && (
@@ -185,13 +183,13 @@ export default function LoginForm() {
               Password
             </label>
             <Link
-              href="/forgot-password" prefetch={false}
+              href="/forgot-password"
+              prefetch={false}
               className="text-xs text-blue-500 hover:text-blue-600 font-medium"
             >
               Forgot password?
             </Link>
           </div>
-          {/* ✅ FIX: wrapper is relative, icon is pointer-events-none, right toggle has correct z-index */}
           <div className="relative flex items-center">
             <TbLock className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
             <input
@@ -202,10 +200,10 @@ export default function LoginForm() {
                 required: "Password is required",
               })}
               className={`
-                input-base w-full
-                pl-11 pr-12 py-3
+                input-base w-full py-3
                 ${errors.password ? "border-red-400 focus:ring-red-400" : ""}
               `}
+              style={{ paddingLeft: "3rem", paddingRight: "3rem" }}
             />
             <button
               type="button"
@@ -232,9 +230,7 @@ export default function LoginForm() {
           type="submit"
           fullWidth
           isLoading={isLoading}
-          endContent={
-            !isLoading && <TbArrowRight className="w-5 h-5" />
-          }
+          endContent={!isLoading && <TbArrowRight className="w-5 h-5" />}
           className="h-12 font-semibold btn-gradient text-white mt-2"
         >
           Sign In
@@ -245,7 +241,9 @@ export default function LoginForm() {
       <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
         Don&apos;t have an account?{" "}
         <Link
-          href="/register"
+          href={`/register${
+            redirect !== "/" ? `?redirect=${encodeURIComponent(redirect)}` : ""
+          }`}
           className="text-blue-500 hover:text-blue-600 font-semibold"
         >
           Create one free
@@ -261,9 +259,7 @@ export default function LoginForm() {
           <p>
             <strong>Admin:</strong> admin@renteasy.com / Admin123
           </p>
-          <p>
-           For Google login default role is TENANT
-          </p>
+          <p>For Google login default role is TENANT</p>
         </div>
       </div>
     </motion.div>

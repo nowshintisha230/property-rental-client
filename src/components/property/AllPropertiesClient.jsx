@@ -6,10 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button, Chip } from "@heroui/react";
 import {
   TbSearch,
-  TbFilter,
   TbX,
-  TbSortAscending,
-  TbSortDescending,
   TbAdjustmentsHorizontal,
   TbRefresh,
 } from "react-icons/tb";
@@ -36,7 +33,7 @@ export default function AllPropertiesClient() {
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({
     page: 1,
-    limit: 9,
+    limit: 12,
     total: 0,
     pages: 1,
   });
@@ -75,7 +72,7 @@ export default function AllPropertiesClient() {
           params.append(k, v);
         }
       });
-      params.set("limit", "9");
+      params.set("limit", "12");
 
       const res = await axiosInstance.get(`/properties?${params}`);
       setProperties(res.data.data.properties);
@@ -178,18 +175,18 @@ export default function AllPropertiesClient() {
             <TbSearch className="w-5 h-5 text-gray-400" />
           </span>
           <input
-  type="text"
-  placeholder="Search by title, location, or description..."
-  value={searchInput}
-  onChange={handleSearchInput}
-  className="input-base w-full"
-  style={{
-    paddingLeft: "3rem",
-    paddingRight: searchInput ? "2.5rem" : "1rem",
-    paddingTop: "0.75rem",
-    paddingBottom: "0.75rem",
-  }}
-/>
+            type="text"
+            placeholder="Search by title, location, or description..."
+            value={searchInput}
+            onChange={handleSearchInput}
+            className="input-base w-full"
+            style={{
+              paddingLeft: "3rem",
+              paddingRight: searchInput ? "2.5rem" : "1rem",
+              paddingTop: "0.75rem",
+              paddingBottom: "0.75rem",
+            }}
+          />
           {searchInput && (
             <button
               onClick={() => {
@@ -315,8 +312,8 @@ export default function AllPropertiesClient() {
 
       {/* Grid */}
       {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 9 }).map((_, i) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {Array.from({ length: 12 }).map((_, i) => (
             <PropertyCardSkeleton key={i} />
           ))}
         </div>
@@ -329,7 +326,7 @@ export default function AllPropertiesClient() {
           onAction={clearFilters}
         />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {properties.map((property, i) => (
             <motion.div
               key={property._id}

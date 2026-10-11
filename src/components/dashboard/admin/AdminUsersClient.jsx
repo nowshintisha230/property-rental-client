@@ -1,4 +1,4 @@
-// src/components/dashboard/admin/AdminUsersClient.jsx
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -13,14 +13,10 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Select,
-  SelectItem,
 } from "@heroui/react";
 import {
   TbSearch,
   TbRefresh,
-  TbUsers,
-  TbShield,
   TbEdit,
   TbX,
 } from "react-icons/tb";
@@ -31,9 +27,7 @@ import { formatDate, debounce } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import toast from "react-hot-toast";
 
-// "admin" intentionally excluded — admin role can no longer be
-// assigned from this UI. Existing admin accounts (if any) are
-// unaffected; this only limits what this picker offers going forward.
+
 const ROLES = ["tenant", "owner"];
 
 const roleColors = {
@@ -59,23 +53,20 @@ export default function AdminUsersClient() {
   const [newRole, setNewRole] = useState("");
   const [roleLoading, setRoleLoading] = useState(false);
 
-  const fetchUsers = useCallback(
-    async (p = 1, s = "") => {
-      setLoading(true);
-      try {
-        const params = new URLSearchParams({ page: p, limit: 10 });
-        if (s) params.append("search", s);
-        const res = await axiosInstance.get(`/users?${params}`);
-        setUsers(res.data.data.users || []);
-        setPagination(res.data.data.pagination);
-      } catch {
-        toast.error("Failed to load users");
-      } finally {
-        setLoading(false);
-      }
-    },
-    []
-  );
+  const fetchUsers = useCallback(async (p = 1, s = "") => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({ page: p, limit: 10 });
+      if (s) params.append("search", s);
+      const res = await axiosInstance.get(`/users?${params}`);
+      setUsers(res.data.data.users || []);
+      setPagination(res.data.data.pagination);
+    } catch {
+      toast.error("Failed to load users");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     fetchUsers(page, search);
@@ -96,10 +87,6 @@ export default function AdminUsersClient() {
 
   const openRoleModal = (user) => {
     setRoleModal(user);
-    // If the user already has a role outside the allowed picker
-    // options (e.g. an existing "admin"), default the picker
-    // selection to their current role anyway so "Update Role" stays
-    // disabled until the admin actually picks tenant/owner.
     setNewRole(user.role);
   };
 
@@ -110,7 +97,7 @@ export default function AdminUsersClient() {
     }
     setRoleLoading(true);
     try {
-      const res = await axiosInstance.patch(`/users/${roleModal._id}/role`, {
+      await axiosInstance.patch(`/users/${roleModal._id}/role`, {
         role: newRole,
       });
       setUsers((prev) =>
@@ -118,9 +105,7 @@ export default function AdminUsersClient() {
           u._id === roleModal._id ? { ...u, role: newRole } : u
         )
       );
-      toast.success(
-        `${roleModal.name}'s role changed to ${newRole}`
-      );
+      toast.success(`${roleModal.name}'s role changed to ${newRole}`);
       setRoleModal(null);
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to update role");
@@ -131,7 +116,7 @@ export default function AdminUsersClient() {
 
   return (
     <div className="page-transition">
-      {/* Header */}
+      
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <h1 className="page-title">All Users</h1>
@@ -150,15 +135,16 @@ export default function AdminUsersClient() {
         </Button>
       </div>
 
-      {/* Search bar */}
+      
       <div className="relative mb-6 max-w-md">
-        <TbSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
+        <TbSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10 pointer-events-none" />
         <input
           type="text"
           placeholder="Search by name or email..."
           value={searchInput}
           onChange={handleSearchInput}
-          className="input-base pl-11"
+          className="input-base"
+          style={{ paddingLeft: "3rem", paddingRight: "2.75rem" }}
         />
         {searchInput && (
           <button
@@ -174,7 +160,7 @@ export default function AdminUsersClient() {
         )}
       </div>
 
-      {/* Table */}
+      
       <div className="card-base overflow-hidden">
         {loading ? (
           <div className="table-container">
@@ -215,16 +201,21 @@ export default function AdminUsersClient() {
             <table className="w-full">
               <thead className="table-head">
                 <tr>
-                  {["User", "Email", "Role", "Joined", "Auth Type", "Actions"].map(
-                    (h) => (
-                      <th
-                        key={h}
-                        className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap"
-                      >
-                        {h}
-                      </th>
-                    )
-                  )}
+                  {[
+                    "User",
+                    "Email",
+                    "Role",
+                    "Joined",
+                    "Auth Type",
+                    "Actions",
+                  ].map((h) => (
+                    <th
+                      key={h}
+                      className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap"
+                    >
+                      {h}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-100 dark:divide-gray-800">
@@ -236,7 +227,7 @@ export default function AdminUsersClient() {
                     transition={{ delay: i * 0.04 }}
                     className="table-row"
                   >
-                    {/* User */}
+                    
                     <td className="table-cell">
                       <div className="flex items-center gap-3">
                         <Avatar
@@ -259,14 +250,14 @@ export default function AdminUsersClient() {
                       </div>
                     </td>
 
-                    {/* Email */}
+                   
                     <td className="table-cell">
                       <span className="text-sm text-gray-600 dark:text-gray-400">
                         {u.email}
                       </span>
                     </td>
 
-                    {/* Role */}
+                    
                     <td className="table-cell">
                       <Chip
                         color={roleColors[u.role] || "primary"}
@@ -278,14 +269,14 @@ export default function AdminUsersClient() {
                       </Chip>
                     </td>
 
-                    {/* Joined */}
+                   
                     <td className="table-cell">
                       <span className="text-sm text-gray-500 dark:text-gray-400">
                         {formatDate(u.createdAt)}
                       </span>
                     </td>
 
-                    {/* Auth type */}
+                   
                     <td className="table-cell">
                       <span
                         className={`text-xs font-medium px-2.5 py-1 rounded-full ${
@@ -298,7 +289,7 @@ export default function AdminUsersClient() {
                       </span>
                     </td>
 
-                    {/* Actions */}
+                  
                     <td className="table-cell">
                       <Tooltip
                         content={
@@ -326,7 +317,7 @@ export default function AdminUsersClient() {
           </div>
         )}
 
-        {/* Pagination */}
+       
         {!loading && pagination.pages > 1 && (
           <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100 dark:border-gray-800">
             <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -368,7 +359,7 @@ export default function AdminUsersClient() {
         )}
       </div>
 
-      {/* Role Change Modal */}
+     
       <Modal
         isOpen={!!roleModal}
         onClose={() => setRoleModal(null)}
@@ -382,7 +373,7 @@ export default function AdminUsersClient() {
           <ModalBody className="py-6">
             {roleModal && (
               <div className="space-y-5">
-                {/* User info */}
+               
                 <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
                   <Avatar
                     src={roleModal.photo}
@@ -411,7 +402,7 @@ export default function AdminUsersClient() {
                   </div>
                 </div>
 
-                {/* Role selector */}
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Select New Role

@@ -1,4 +1,3 @@
-// src/components/home/TopLocations.jsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -76,7 +75,10 @@ export default function TopLocations() {
   };
 
   return (
-    <section className="section-padding bg-white dark:bg-gray-950">
+    <section
+      id="locations"
+      className="section-padding bg-white dark:bg-gray-950 scroll-mt-20"
+    >
       <div className="section-container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -98,7 +100,7 @@ export default function TopLocations() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {locations.map((loc, i) => (
             <motion.button
               key={i}

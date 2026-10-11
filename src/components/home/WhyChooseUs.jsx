@@ -1,4 +1,3 @@
-// src/components/home/WhyChooseUs.jsx
 "use client";
 
 import { motion } from "framer-motion";
@@ -64,9 +63,11 @@ const features = [
 
 export default function WhyChooseUs() {
   return (
-    <section className="section-padding bg-white dark:bg-gray-950">
+    <section
+      id="why-renteasy"
+      className="section-padding bg-white dark:bg-gray-950 scroll-mt-20"
+    >
       <div className="section-container">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -87,8 +88,7 @@ export default function WhyChooseUs() {
           </p>
         </motion.div>
 
-        {/* Features grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((feature, i) => (
             <motion.div
               key={i}
@@ -99,7 +99,6 @@ export default function WhyChooseUs() {
               whileHover={{ y: -4 }}
               className="card-base p-6 group"
             >
-              {/* Icon */}
               <div
                 className={`inline-flex p-3.5 rounded-2xl ${feature.bg} mb-5 group-hover:scale-110 transition-transform duration-300`}
               >
